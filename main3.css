@@ -52,6 +52,59 @@
 	top:270px;
 	left:290px;
 	z-index:2;
+	animation:color 8s linear infinite;
+}
+@keyframes color{
+	0%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:290px;
+	}
+	50%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:230px;
+	}
+	100%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:190px;
+	}
+}
+#circle4_1{
+	display:block;
+	width:170px;
+	height:170px;
+	border-radius:50%;
+	background-color:limegreen;
+	position:absolute;
+	top:270px;
+	left:290px;
+	z-index:2;
+	animation:color1 8s linear infinite;
+}
+@keyframes color1{
+	0%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:290px;
+	}
+	50%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:230px;
+	}
+	100%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:190px;
+	}
 }
 #circle5{
 	display:block;
@@ -63,6 +116,59 @@
 	top:270px;
 	left:945px;
 	z-index:2;
+	animation:color2 8s linear infinite;
+}
+@keyframes color2{
+	0%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:945px;
+	}
+	50%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:985px;
+	}
+	100%{
+		background: radial-gradient(circle, limegreen 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:1045px;
+	}
+}
+#circle5_1{
+	display:block;
+	width:170px;
+	height:170px;
+	border-radius:50%;
+	background-color:limegreen;
+	position:absolute;
+	top:270px;
+	left:945px;
+	z-index:2;
+	animation:color3 8s linear infinite;
+}
+@keyframes color3{
+	0%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:945px;
+	}
+	50%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 0;
+		top:270px;
+		left:985px;
+	}
+	100%{
+		background: radial-gradient(circle, dodgerblue 50%, transparent 70%);
+		opacity: 1;
+		top:270px;
+		left:1045px;
+	}
 }
 #circle6{
 	display:block;
@@ -74,6 +180,45 @@
 	top:300px;
 	left:200px;
 	z-index:2;
+	animation:color4 8s linear infinite;
+}
+@keyframes color4{
+	0%{
+		background:radial-gradient(circle, yellowgreen 50%, tranparent 70%);
+		opacity:0;
+	}
+	50%{
+		background:radial-gradient(circle, yellowgreen 50%, transparent 70%);
+		opacity:1;
+	}
+	100%{
+		background:radial-gradient(circle, yellowgreen 50%, transparent 70%);
+		opacity:0;
+}
+#circle6_1{
+	display:block;
+	width:110px;
+	height:110px;
+	border-radius:50%;
+	background-color:yellowgreen;
+	position:absolute;
+	top:300px;
+	left:200px;
+	z-index:2;
+	animation:color5 8s linear infinite;
+}
+@keyframes color5{
+	0%{
+		background:radial-gradient(circle, skyblue 50%, tranparent 70%);
+		opacity:1;
+	}
+	50%{
+		background:radial-gradient(circle, skyblue 50%, transparent 70%);
+		opacity:0;
+	}
+	100%{
+		background:radial-gradient(circle, skyblue 50%, transparent 70%);
+		opacity:1;
 }
 #circle7{
 	display:block;

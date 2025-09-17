@@ -20,6 +20,7 @@
 	left:500px;
 	z-index:1;
 }
+
 #block1{
 	display:inline-block;
 	width:120px;
@@ -127,6 +128,25 @@
 	top:460px;
 	left:560px;
 	z-index:2;
+	animation-name: colors;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors{
+	0%{
+		top: 460px;
+		left: 560px;
+	}
+	100%{
+		top:480px;
+		left: 580px;
+	}
+
 }
 #cube2{
 	display:inline-block;
@@ -137,6 +157,24 @@
 	top:480px;
 	left:580px;
 	z-index:2;
+	animation-name: colors1;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors1{
+	0%{
+		top: 480px;
+		left: 580px;
+	}
+	100%{
+		top:515px;
+		left: 610px;
+	}
 }
 #cube3{
 	display:inline-block;
@@ -147,6 +185,25 @@
 	top:515px;
 	left:610px;
 	z-index:2;
+	animation-name: colors2;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors2{
+	0%{
+		top: 515px;
+		left: 610px;
+	}
+	100%{
+		top:565px;
+		left: 665px;
+	}
+
 }
 #cube4{
 	display:inline-block;
@@ -157,6 +214,24 @@
 	top:565px;
 	left:665px;
 	z-index:2;
+	animation-name: colors3;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors3{
+	0%{
+		top: 565px;
+		left: 665px;
+	}
+	100%{
+		top:625px;
+		left: 735px;
+	}
 }
 #cube5{
 	display:inline-block;
@@ -167,6 +242,24 @@
 	top:625px;
 	left:735px;
 	z-index:2;
+	animation-name: colors4;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors4{
+	0%{
+		top: 625px;
+		left: 735px;
+	}
+	100%{
+		top:705px;
+		left: 815px;
+	}
 }
 #cube6{
 	display:inline-block;
@@ -177,6 +270,24 @@
 	top:705px;
 	left:815px;
 	z-index:2;
+	animation-name: colors5;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors5{
+	0%{
+		top: 705px;
+		left: 815px;
+	}
+	100%{
+		top:800px;
+		left: 915px;
+	}
 }
 #cube7{
 	display:inline-block;
@@ -187,4 +298,22 @@
 	top:800px;
 	left:915px;
 	z-index:2;
+	animation-name: colors6;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+    animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: none;	
+}
+@keyframes colors6{
+	0%{
+		top: 800px;
+		left: 915px;
+	}
+	100%{
+		top:905px;
+		left: 1015px;
+	}
 }
