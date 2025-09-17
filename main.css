@@ -1,0 +1,12 @@
+p{
+	color: blueviolet;
+}
+a{
+	color:red;
+}
+a:hover{ 
+	color:blue;
+}
+p{
+	display:block;
+}

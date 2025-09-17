@@ -1,0 +1,60 @@
+#container{
+	display:inline-block;
+	width:1500px;
+	height:2000px;
+	background-color: orange;
+	position:absolute;
+}
+#words{
+	display:flex;
+	flex-direction:column;
+	color:yellow;
+	font-size:130px;
+	font-weight:bold;
+	line-height:200px;
+	align-items: center;
+	position:absolute;
+	top:300px;
+	left:350px;
+}
+#smile{
+	display:block;
+	width:500px;
+	height:500px;
+	border-radius: 50%;
+	background-color:yellow;
+	position:absolute;
+	top:1300px;
+	left:520px;
+}
+#eye{
+	display:block;
+	width:60px;
+	height:60px;
+	border-radius: 50%;
+	background-color:black;
+	position:absolute;
+	top:1480px;
+	left:630px;
+}
+#eye1{
+	display:block;
+	width:60px;
+	height:60px;
+	border-radius: 50%;
+	background-color:black;
+	position:absolute;
+	top:1480px;
+	left:750px;
+}
+#semicircle{
+	display:block;
+	width:65px;
+	height:100px;
+	background-color: black;
+	border-bottom-left-radius:100px;
+	border-bottom-right-radius: 100px;
+	position:absolute;
+	top:1600px;
+	left:705px;
+}
