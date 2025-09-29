@@ -1,0 +1,24 @@
+#button {
+  background-color:yellow;
+  font-size: 24px;
+  width: 200px;
+  text-align:center;
+  padding: 40px 0;
+}
+.parent {
+    text-align: center;
+}
+
+button {
+    font-size: 20px;
+    padding: 20px;
+    background-color: #dcdcdc;
+    border: solid 1px grey;
+}
+#push{
+	font-size: 20px;
+	padding:20px;
+	width:200px;
+	background-color:green;
+	text-align: center;
+}

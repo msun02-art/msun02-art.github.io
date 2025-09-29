@@ -1,0 +1,15 @@
+//DOM Elements
+const startScreen = document.getElementById("start-screen")
+const quizScreen = document.getElementById("quiz-screen")
+const resultScreen = document.getElementById("result-Screen")
+const startButton = document.getElementById("Start-btn")
+const questionText = document.getElementById("question-text")
+const currentQuestionSpan = document.getElementById("answers-container")
+const totalQuestionsSpan = document.getElementById("total-questions")
+const scoreSpan = document.getElementById("score")
+const finalScoreSpan = document.getElementById("final-score")
+const maxScoreSpan = document.getElementById("max-score")
+const resultmessage = document.getElementById("result-message")
+const restartButton = document.getElementById("restart-btn")
+const progressBar = document.getElementById("progress")
+
