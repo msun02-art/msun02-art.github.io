@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Call+test</title>
+</head>
+
+<body>
+  <div id="board"></div>
+<style>
+  .call{
+    font-size:18px;
+    font-family: "Courier New", Menlo, monospace;
+    font-weight: 900;
+  }
+  .text{
+    font-size: 15px;
+    font-family: "Courier New", Menlo, monospace;
+    font-weight:570;
+  }
+  .call:hover {
+  transform: scale(1.15);
+  background: greenyellow;
+  color: red;
+}
+.text::before {
+  content: ""; 
+}
+
+.text:hover::before {
+  content: "..."; 
+  color: darkgreen;
+  font-size: 24px;
+}
+  </style>
+
+  <script> 
+  document.addEventListener('DOMContentLoaded', () => {
+  const callSound = new Audio('./telephone-dial-and-call-ring-21151.mp3');
+  const textSound = new Audio('./keyboard-typing-fast-371229.mp3');
+  const call = document.querySelectorAll('.call');
+  const text = document.querySelectorAll('.text');
+
+  const board = document.getElementById('board');   
+  let html = "";
+
+    for (let i = 1; i <= 170; i++) {
+  let line = "";
+  for (let j = 1; j <= 170; j++) {
+    if (j <= i) {
+      line += '<span class="call">call me  </span>';
+    } else {
+      line += '<span class="text">textback</span>';
+         }
+  }
+      html += line + "<br>";
+     }
+  board.innerHTML = html;
+
+   board.addEventListener('click', (e) => {
+      const el = e.target;
+      if (el.classList.contains('call')) {
+        callSound.currentTime = 0;
+        callSound.play();
+      } else if (el.classList.contains('text')) {
+        textSound.currentTime = 0;
+        textSound.play();
+      }
+    });
+  });
+  </script>
+  <a href="piano.html">
+  <button>Next Page</button>
+</a>
+</body>
+</html>
