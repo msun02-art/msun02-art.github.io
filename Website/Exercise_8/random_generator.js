@@ -30,7 +30,7 @@ function randomGradient() {
   const gradient = `linear-gradient(${angle}deg, ${selected[0]}, ${selected[1]}, ${selected[2]})`;
 
   // 应用到背景盒
-  background.style.background = gradient;      // ✅ 用 background，而不是 backgroundColor
+  background.style.background = gradient;      
 
   // 更新文字
   label.innerHTML = `🎨 ${selected.join(' → ')}<br><small>${angle}°</small>`;
