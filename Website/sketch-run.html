@@ -17,42 +17,41 @@
     }
 
     h1 {
-      margin-top: 50px;
-      font-size: 2.5rem;
-      color: #24968C;
+      margin-top: 5%;
+      font-size: 5vw; /* 依螢幕寬度自適應 */
+      color: #333;
       text-align: center;
     }
 
     .art-area {
       flex: 1;
-      width: 80%;
-      margin: 30px 0;
+      width: 85%;
+      margin: 5% 0;
       border: 2px dashed #ccc;
       border-radius: 12px;
-      background-color: #15635D;
+      background-color: #fafafa;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #999;
-      font-size: 1.2rem;
+      font-size: 4vw;
     }
 
     .button-container {
       display: flex;
-      flex-wrap: wrap;           
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;                 
-      max-width: 700px;         
-      margin-bottom: 50px;
+      gap: 4%;
+      width: 90%;          /* 控制整體寬度 */
+      margin-bottom: 5%;
     }
 
     .button {
-      flex: 1 1 200px;          
-      max-width: 200px;      
-      height: 60px;
-      background-color: #25E897;
+      flex: 1 1 28%;        /* 每個按鈕佔容器寬約28%（三個剛好一排） */
+      aspect-ratio: 3 / 1;  /* 按鈕比例固定，避免失真 */
+      background-color: #4CAF50;
       color: white;
-      font-size: 1.2rem;
+      font-size: 3.5vw;
       border: none;
       border-radius: 10px;
       display: flex;
@@ -65,15 +64,22 @@
     .button:hover {
       background-color: #45a049;
     }
+
+    /* 響應式：螢幕較小時自動兩個一排 */
+    @media (max-width: 600px) {
+      .button {
+        flex: 1 1 45%;
+        font-size: 4vw;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Paint with Every Step</h1>
+  <h1>Paint with Your Footprints</h1>
 
   <div class="art-area">
     Space for generated artwork
   </div>
-
 
   <div class="button-container">
     <div class="button">Start Running</div>
@@ -81,7 +87,7 @@
     <div class="button">Average Speed</div>
     <div class="button">Heart Rate</div>
     <div class="button">Mood</div>
-    <div class="button">View Gallery</div>
+     <div class="button">View Gallery</div>
   </div>
 </body>
 </html>
