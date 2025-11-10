@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<title>Pixel Route 简化版</title>
+<style>
+  body { background: #111; color: #fff; text-align: center; }
+  canvas { background: #000; margin-top: 20px; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<h2>Pixel Art 跑步路线 Demo</h2>
+<canvas id="canvas" width="700" height="700"></canvas>
+
+<script>
+// ===== 1️⃣ 取得画布 (Canvas) 与绘图工具 =====
+const canvas = document.getElementById("canvas");   // 获取 <canvas> 元素
+const ctx = canvas.getContext("2d");                // 获取 2D 绘图环境
+
+// ===== 2️⃣ 模拟一条路线（假数据，用于测试） =====
+// 我们用一个数组来存储路线点，每个点有 x、y 坐标。
+let route = [];
+let x = 350, y = 500;                               // 起点位置
+for (let i = 0; i < 700; i++) {                     // 生成 200 个点
+  x += Math.random() * 20 - 10;                       // 随机向左/右偏一点
+  y += Math.random() * 20 - 10;                       // 随机向上/下偏一点
+  route.push({ x, y });                             // 保存点坐标
+}
+
+// ===== 3️⃣ 设置像素大小（每个方块的尺寸） =====
+const pixel = 7;                                    // 每个像素格 6x6 像素
+
+// ===== 4️⃣ 把路线绘制成像素方块 =====
+ctx.fillStyle = "#00ff99";                          // 设置填充颜色（绿色）
+for (let i = 0; i < route.length; i++) {            // 遍历每个点
+  const p = route[i];
+  // 取整让方块对齐像素网格
+  const px = Math.floor(p.x / pixel) * pixel;
+  const py = Math.floor(p.y / pixel) * pixel;
+  ctx.fillRect(px, py, pixel, pixel);               // 画一个小方块
+}
+
+// ===== 5️⃣ 标出起点和终点 =====
+ctx.fillStyle = "red";                              // 红色终点
+ctx.fillRect(route[route.length - 1].x, route[route.length - 1].y, 8, 8);
+ctx.fillStyle = "yellow";                           // 黄色起点
+ctx.fillRect(route[0].x, route[0].y, 8, 8);
+
+</script>
+</body>
+</html>
