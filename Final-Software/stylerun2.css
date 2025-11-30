@@ -1,0 +1,115 @@
+.iphone-pro {
+  background-color: white;
+  width: 100%;
+  min-width: 402px;
+  min-height: 874px;
+  position: relative;
+}
+ 
+.iphone-pro .appname {
+  position: absolute;
+  left: 50%;
+  top: 160px;
+  transform: translateX(-50%) scale(2.7);   
+  font-size: 22px;                          
+  font-family: "Poller One", sans-serif;
+  color: #57a267;
+  opacity: 1;
+}
+ 
+.welcome-block {
+  position: absolute;
+  left: 50%;
+  top: 275px;                        
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 24px;          
+  font-weight: 500;
+  color: #57a368;
+  font-family: "Carlito", sans-serif;
+}
+
+
+.login-form {
+  position: absolute;
+  left: 50%;
+  top: 370px;                        
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;                  
+}
+
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: "Carlito", sans-serif;
+}
+
+.form-group label {
+  font-size: 17px;            
+  margin-left: 17px; 
+  color: #57a267;
+}
+
+
+.form-group input {
+  height: 60px;                  
+  width: 315px;                      
+  border-radius: 999px;
+  border: none;
+  padding: 0 18px;
+  background-color: #f4ff75;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.06);
+  font-size: 15px;           
+  color: #344046;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #57a267;
+}
+
+.form-group input:focus {
+  box-shadow: 0 0 0 2px rgba(87, 163, 104, 0.6);
+}
+
+
+.helper-text {
+  margin-top: 2px;
+  font-size: 15px;                  
+  color: #57a267;
+  margin-left: 17px; 
+  font-family: "Carlito", sans-serif;
+}
+
+.login-botton {
+  margin-top: 70px;
+  height: 50px;
+  width: 140px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%); 
+  display: inline-flex;      
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  border: none;
+  background-color: #57a368;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: "Carlito", sans-serif;
+  text-decoration: none;      
+  cursor: pointer;
+}
+
+.login-botton:active {
+  transform: translateX(-50%) translateY(1px);
+}

@@ -1,0 +1,571 @@
+.iphone-pro {
+  background-color: white;
+  width: 100%;
+  min-width: 402px;
+  min-height: 874px;
+  position: relative;
+}
+
+
+.iphone-pro .yellow-ball {
+  position: absolute;
+  top: 200px;
+  left: 50%;
+  width: 350px;
+  height: 350px;
+  margin-left: -50px; 
+  background-color: #F4FF75;
+  transform: translate(-50%, -50%) scale(7);
+  border-radius: 50%;
+  animation: yellowBallshrink 5s ease-in-out 9s forwards;
+}
+@keyframes yellowBallshrink {
+  0% {
+    transform: scale(7);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.iphone-pro .character-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1);
+  opacity: 1;
+  animation: characterShrink 2.5s cubic-bezier(0.4, 0.0, 0.2, 1) 8.5s forwards;
+}
+
+@keyframes characterShrink {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.15);
+    opacity: 0;   /* 需要的话，保留渐隐；如果不想淡出，就删掉这一行 */
+  }
+}
+
+.iphone-pro .appname {
+  position: absolute;
+  left: 50%;
+  top: 50%;             
+  transform: translate(-50%, 10px); 
+  font-size: 20px;
+  font-family: "Poller One", sans-serif;
+  color: #57a267;           
+  opacity: 0;            
+  animation: endTextAppear 5s ease-out 10.5s forwards;
+}
+
+@keyframes endTextAppear {
+  /* 起点：在原位，刚出现 */
+  0% {
+    opacity: 0.5;
+    transform: translate(-50%, -20px) scale(1);
+  }
+
+  /* 前面一小段：淡入 + 稍微上移一点，节奏柔和一些 */
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -40px) scale(1.4);
+  }
+
+  /* 终点：往上总共飘 300px，并稍微变大一点 */
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -280px) scale(2.3);
+  }
+}
+
+.iphone-pro .character {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  transform-origin: 205px 410px; 
+  animation: characterRotateAll 4s linear;
+  animation-timing-function: linear;
+  animation-delay: 2s;  
+}
+@keyframes characterRotateAll {
+  0%   { transform: rotate(0deg); }
+  10%  { transform: rotate(40deg); }  
+  18%  { transform: rotate(75deg); } 
+  32%  { transform: rotate(130deg); } 
+  45%  { transform: rotate(180deg); }  
+  59%  { transform: rotate(235deg); }
+  78%  { transform: rotate(310deg); }  
+  100% { transform: rotate(360deg); } 
+}
+
+
+/* head*/
+.iphone-pro .ellipse {
+  position: absolute;
+  top: 333px;
+  left: 130px;
+  width: 154px;
+  height: 154px;
+  background-color: #57a267;
+  border-radius: 77px;
+}
+
+/* right eye white*/
+.iphone-pro .div {
+  position: absolute;
+  top: 390px;
+  left: 225px;
+  width: 37px;
+  height: 39px;
+  background-color: #ffffff;
+  border-radius: 18.5px / 19.5px;
+  transform: rotate(89.50deg);
+    animation:
+    right-eye-move  1s ease-in-out  forwards,
+    right-eye-move1 1s ease-in-out  forwards,
+    right-eye-move2 1s ease-in-out 6s forwards;
+}
+
+@keyframes right-eye-move {
+  0% { left: 225px; top: 390px; }
+  100% { left: 218px; top: 390px; }
+}
+@keyframes right-eye-move1 {
+  0% { left: 218px; top: 390px; }
+  100% { left: 199px; top: 390px; }
+}
+@keyframes right-eye-move2 {
+  0% { left: 199px; top: 390px; }
+  100% { left: 218px; top: 390px; }
+}
+
+
+
+
+/* right eye black*/
+.iphone-pro .ellipse-2 {
+  position: absolute;
+  top: 395px;
+  left: 240px;
+  width: 21px;
+  height: 21px;
+  background-color: #000000;
+  border-radius: 10.49px / 10.51px;
+  transform: rotate(89.50deg);
+  animation:
+    right-eye-move-black 1s ease-in-out   forwards,
+    right-eye-move-black1 1s ease-in-out   forwards,
+    right-eye-move-black2 1s ease-in-out  6s forwards;
+}
+
+@keyframes right-eye-move-black {
+  0% { left: 240px; top: 395px; }
+  100% { left: 226px; top: 398px; }
+}
+@keyframes right-eye-move-black1 {
+  0% { left: 226px; top: 398px; }
+  100% { left: 202px; top: 394px; }
+}
+@keyframes right-eye-move-black2 {
+  0% { left: 202px; top: 394px; }
+  100% { left: 223px; top: 398px; }
+}
+
+/* right eye hightlight */
+.iphone-pro .ellipse-3 {
+  position: absolute;
+  top: 398px;
+  left: 247px;
+  width: 8px;
+  height: 9px;
+  background-color: #ffffff;
+  border-radius: 4.05px / 4.44px;
+  transform: rotate(89.50deg);
+  animation:
+  right-eye-move-hightlight 1s ease-in-out  1 forwards,
+  right-eye-move-hightlight1 1s ease-in-out  1 forwards,
+  right-eye-move-hightlight2 1s ease-in-out 6s forwards;
+
+}
+
+@keyframes right-eye-move-hightlight {
+  0% { left: 247px; top: 398px; }
+  100% { left: 233px; top: 398px; }
+}
+@keyframes right-eye-move-hightlight1 {
+  0% { left: 233px; top: 398px; }
+  100% { left: 205px; top: 397px; }
+}
+@keyframes right-eye-move-hightlight2 {
+  0% { left: 205px; top: 397px; }
+  100% { left: 233px; top: 397px; }
+}
+
+
+/* left eye white*/
+.iphone-pro .ellipse-4 {
+  position: absolute;
+  top: 390px;
+  left: 183px;
+  width: 37px;
+  height: 39px;
+  background-color: #ffffff;
+  border-radius: 18.5px / 19.5px;
+  transform: rotate(89.50deg);
+  animation:
+  left-eye-move 1s ease-in-out forwards,
+  left-eye-move1 1s ease-in-out   forwards,
+  left-eye-move2 1s ease-in-out  6s forwards;
+
+}
+
+
+@keyframes left-eye-move {
+  0% { left: 183px; top: 390px; }
+  100% { left: 173px; top: 390px; }
+}
+@keyframes left-eye-move1 {
+  0% { left: 183px; top: 390px; }
+  100% { left: 155px; top: 390px; }
+}
+@keyframes left-eye-move2 {
+  0% { left: 155px; top: 390px; }
+  100% { left: 172px; top: 390px; }
+}
+
+/* left eye black*/
+.iphone-pro .ellipse-5 {
+  position: absolute;
+  top: 395px;
+  left: 198px;
+  width: 21px;
+  height: 21px;
+  background-color: #000000;
+  border-radius: 10.49px / 10.51px;
+  transform: rotate(89.50deg);
+  animation:
+  left-eye-move-black 1s ease-in-out forwards,
+  left-eye-move-black1 1s ease-in-out forwards,
+  left-eye-move-black2 1s ease-in-out  6s forwards
+}
+
+@keyframes left-eye-move-black {
+  0% { left: 198px; top: 395px; }
+  100% { left: 181px; top: 398px; }
+}
+@keyframes left-eye-move-black1 {
+  0% { left: 198px; top: 395px; }
+  100% { left: 161px; top: 393px; }
+}
+@keyframes left-eye-move-black2 {
+  0% { left: 161px; top: 393px; }
+  100% { left: 180px; top: 398px; }
+}
+
+/* left eye hightlight */
+.iphone-pro .ellipse-6 {
+  position: absolute;
+  top: 398px;
+  left: 207px;
+  width: 8px;
+  height: 9px;
+  background-color: #ffffff;
+  border-radius: 4.05px / 4.44px;
+  transform: rotate(89.50deg);
+  animation:
+  left-eye-move-highlight 1s ease-in-out forwards,
+  left-eye-move-highlight1 1s ease-in-out  forwards,
+  left-eye-move-highlight2 1s ease-in-out 6s forwards;
+}
+
+@keyframes left-eye-move-highlight {
+  0% { left: 207px; top: 398px; }
+  100% { left: 189px; top: 398px; }
+}
+@keyframes left-eye-move-highlight1 {
+  0% { left: 207px; top: 398px; }
+  100% { left: 163px; top: 397px; }
+}
+@keyframes left-eye-move-highlight2 {
+  0% { left: 163px; top: 397px; }
+  100% { left: 190px; top: 397px; }
+}
+
+.iphone-pro .ellipse-7 {
+  position: absolute;
+  top: 406px;
+  left: 113px;
+  width: 67px;
+  height: 62px;
+  background-color: #57a267;
+  border-radius: 33.5px / 31px;
+  transform: rotate(-24.20deg);
+}
+
+.iphone-pro .ellipse-8 {
+  position: absolute;
+  top: 410px;
+  left: 250px;
+  width: 48px;
+  height: 62px;
+  background-color: #57a267;
+  border-radius: 24px / 31px;
+  transform: rotate(21.75deg);
+}
+
+.iphone-pro .rightfoot {
+  position: absolute;
+  top: 473px;
+  left: 220px;
+  width: 60px;
+  height: 54px;
+
+  transform-origin: 50% 0%;
+
+  animation: rightFootSwing 0.5s ease-in-out 6s 6 alternate forwards;
+}
+
+@keyframes rightFootSwing {
+  0%   { transform: rotate(-10deg); }
+  100% { transform: rotate(10deg); }
+}
+
+
+.iphone-pro .leftfoot {
+  position: absolute;
+  top: 473px;
+  left: 143px;
+  width: 52px;
+  height: 60px;
+  transform-origin: 50% 0%;
+
+  animation: rightFootSwing 0.5s ease-in-out 6s 6 alternate forwards;
+}
+
+@keyframes rightFootSwing {
+  0%   { transform: rotate(-10deg); }
+  100% { transform: rotate(10deg); }
+}
+
+.iphone-pro .ellipse-9 {
+  position: absolute;
+  top: 424px;
+  left: 150px;
+  width: 33px;
+  height: 13px;
+  background-color: #ffd5fc;
+  border-radius: 16.5px / 6.5px;
+  animation:
+  left-blush 0.8s ease-in-out  forwards,
+  left-blush1 0.8s ease-in-out forwards,
+  left-blush2 0.8s ease-in-out 6s forwards;
+}
+
+@keyframes left-blush {
+  0% { left: 150px; top: 424px; }
+  100% { left: 140px; top: 424px; }
+}
+
+@keyframes left-blush1 {
+  0% { left: 140px; top: 424px; }
+  100% { left: 135px; top: 420px; }
+}
+@keyframes left-blush2 {
+  0% { left: 135px; top: 420px; }
+  100% { left: 138px; top: 420px; }
+}
+
+.iphone-pro .ellipse-10 {
+  position: absolute;
+  top: 424px;
+  left: 257px;
+  width: 20px;
+  height: 9px;
+  background-color: #ffd5fc;
+  border-radius: 10px / 4.5px;
+  animation:
+  right-blush 0.8s ease-in-out forwards,
+  right-blush1 0.8s ease-in-out forwards,
+  right-blush2 0.8s ease-in-out 6s forwards;
+}
+
+@keyframes right-blush {
+  0% { left: 257px; top: 424px; }
+  100% { left: 255px; top: 424px; }
+}
+@keyframes right-blush1 {
+  0% { left: 255px; top: 424px; }
+  100% { left: 225px; top: 423px; }
+}
+@keyframes right-blush2 {
+  0% { left: 225px; top: 423px; }
+  100% { left: 255px; top: 423px; }
+}
+
+.iphone-pro .lefteyebrow {
+  position: absolute;
+  top: 370px;
+  left: 184px;
+  width: 10px;
+  height: 13px;
+  animation:
+  lefteyebrow 0.8s ease-in-out   forwards,
+  lefteyebrow1 0.8s ease-in-out   forwards,
+  lefteyebrow2 0.8s ease-in-out  6s forwards;
+}
+
+@keyframes lefteyebrow {
+  0% { left: 184px; top: 370px; }
+  100% { left: 170px; top: 370px; }
+}
+@keyframes lefteyebrow1 {
+  0% { left: 170px; top: 370px; }
+  100% { left: 155px; top: 369px; }
+}
+@keyframes lefteyebrow2 {
+  0% { left: 155px; top: 369px; }
+  100% { left: 166px; top: 367px; }
+}
+
+.iphone-pro .righteyebrow {
+  position: absolute;
+  top: 369px;
+  left: 247px;
+  width: 10px;
+  height: 9px;
+  animation: 
+  righteyebrow 0.8s ease-in-out   forwards,
+  righteyebrow1 0.8s ease-in-out   forwards,
+  righteyebrow2 0.8s ease-in-out  6s forwards;
+}
+
+@keyframes righteyebrow {
+  0% { left: 247px; top: 369px; }
+  100% { left: 239px; top: 369px; }
+}
+@keyframes righteyebrow1 {
+  0% { left: 239px; top: 369px; }
+  100% { left: 220px; top: 368px; }
+}
+@keyframes righteyebrow2 {
+  0% { left: 220px; top: 368px; }
+  100% { left: 240px; top: 368px; }
+}
+
+
+.iphone-pro .mouth {
+  position: absolute;
+  top: 430px;
+  left: 218px;
+  width: 15px;
+  height: 13px;
+  animation: 
+  mouth 0.8s ease-in-out  forwards,
+  mouth1 0.8s ease-in-out   forwards,
+  mouth2 0.8s ease-in-out  6s forwards;
+}
+
+@keyframes mouth {
+  0% { left: 218px; top: 430px; }
+  100% { left: 204px; top: 430px; }
+}
+@keyframes mouth1 {
+  0% { left: 204px; top: 430px; }
+  100% { left: 189px; top: 430px; }
+}
+@keyframes mouth2 {
+  0% { left: 189px; top: 430px; }
+  100% { left: 202px; top: 428px; }
+}
+
+
+.iphone-pro .mouth-fold {
+  position: absolute;
+  top: 433px;
+  left: 232px;
+  width: 8px;
+  height: 12px;
+  animation: 
+  mouthfold 0.8s ease-in-out   forwards,
+  mouthfold1 0.8s ease-in-out   forwards,
+  mouthfold2 0.8s ease-in-out  6s forwards;
+}
+
+@keyframes mouthfold {
+  0% { left: 232px; top: 433px; }
+  100% { left: 218px; top: 432px; }
+}
+@keyframes mouthfold1 {
+  0% { left: 218px; top: 433px; }
+  100% { left: 203px; top: 432px; }
+}
+@keyframes mouthfold2 {
+  0% { left: 203px; top: 432px; }
+  100% { left: 216px; top: 430px; }
+}
+
+.iphone-pro .polygon {
+  position: absolute;
+  top: 416px;
+  left: 210px;
+  width: 22px;
+  height: 7px;
+  animation: 
+  nose 0.8s ease-in-out  forwards,
+  nose1 0.8s ease-in-out   forwards,
+  nose2 0.8s ease-in-out 6s forwards;
+}
+
+
+@keyframes nose {
+  0% { left: 210px; top: 416px; }
+  100% { left: 202px; top: 416px; }
+}
+@keyframes nose1 {
+  0% { left: 202px; top: 416px; }
+  100% { left: 184px; top: 415px; }
+}
+@keyframes nose2 {
+  0% { left: 184px; top: 415px; }
+  100% { left: 201px; top: 415px; }
+}
+
+.iphone-pro .start-btn{
+  position: absolute;
+  top: 650px;
+  left: 50%;
+  opacity: 0;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 40px;
+  background-color: #F4FF75;
+  color: #57a267;
+  font-family: "Carlito", sans-serif;
+  font-size: 18px;
+  border-radius: 20px;
+  text-align: center;
+  line-height: 40px;
+  animation: startBtnAppear 1s ease-out 12s forwards;
+  /*                                  ↑
+                              这里就是 animation-delay */
+}
+
+@keyframes startBtnAppear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px);   /* 稍微低一点 */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0); 
+}
+}

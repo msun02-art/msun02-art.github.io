@@ -1,0 +1,134 @@
+.iphone-pro {
+  background-color: #ffffff;
+  width: 100%;
+  min-width: 402px;
+  min-height: 874px;
+  position: relative;
+}
+
+/* 顶部栏 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 30px 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #f4ff75;
+}
+
+.username {
+  font-size: 18px;
+  color: #57a368;
+}
+
+
+/* 绿色横线 */
+.top-divider {
+  height: 4px;
+  width: 100%;
+  background-color: #57a368;
+}
+
+.gpsroute-area {
+  position: absolute;
+  top: 140px;       
+  bottom: 250px;        
+  left: 40px;
+  right: 40px;
+  background-color: #B0DAFF;
+  padding: 30px 30px;
+  box-sizing: border-box;
+  border-radius: 20px;
+}
+
+.gpsroute-area canvas,
+#routeCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 18px;
+}
+
+
+.start-btn{
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 60px;
+  width: 1000px;
+  background-color: #57a368;
+  border: none;
+  border-radius: 30px;
+  color: #F4FF75;
+  font-size: 20px;
+  font-family: "Carlito", sans-serif;
+  font-weight: semibold;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* 底部导航栏容器 */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  background-color: #f4ff75;
+
+  display: flex;
+  align-items: center;          /* 垂直居中 */
+  justify-content: space-around;
+  padding: 0 30px;
+}
+
+
+/* 所有按钮的基础样式 */
+.nav-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  font-family: "Carlito", sans-serif;
+  font-size: 18px;              /* 统一字体大小 */
+  font-weight: 600;
+  color: #57a368;
+
+  /* 让点击区域更大一些，看起来更像一个块 */
+  align-items: flex-start;
+  padding: 25px 50px;
+  border-radius: 0px;
+
+  display: flex;
+  
+  justify-content: center;
+}
+
+/* ⭐ 当前选中的那个按钮：有白色方块背景 */
+.nav-item.active {
+  background-color: #ffffff;
+  color: #57a368;               /* 字还是绿色 */
+  box-shadow: 0 0 0 2px rgba(87, 163, 104, 0.2);  /* 轻微描边，可要可不要 */
+}

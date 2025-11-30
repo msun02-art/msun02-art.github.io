@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FUNRUN – Homepage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"/>
+    <link rel="stylesheet" href="stylerun3.css" />
+    <link rel="stylesheet" href="globals.css" />
+  </head>
+  <body>
+    <div class="iphone-pro">
+      <header class="top-bar">
+        <div class="user-info">
+          <div class="avatar-circle"></div>
+          <span class="username">Username</span>
+        </div>
+      </header>
+
+      <div class="top-divider"></div>
+
+      <div class="yellow-grid">
+        <div class="calendar-blue">
+          <div class="calendar-header">Calendar</div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+
+      <div class="progress-red">
+          <div class="progress-header">Progress</div>
+          <div class="progress-grid" id="progress-grid"></div>
+        </div>
+
+      <div class="plan-shape"></div>
+          <div class="plan-header">Plan</div>
+          <div class="plan-grid" id="plan-grid"></div>
+        
+   
+        <div class="grid-cell cell-1"></div>
+        <div class="grid-cell cell-2"></div>
+        <div class="grid-cell cell-3"></div>
+        <div class="grid-cell cell-4"></div>
+        <div class="grid-cell cell-5"></div>
+        <div class="grid-cell cell-6"></div>
+        <div class="grid-cell cell-7"></div>
+        <div class="grid-cell cell-8"></div>
+      </div>
+
+
+      <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+          <button class="nav-item nav-home active" aria-label="Home">
+            Home
+          </button>
+
+          <button class="nav-item nav-run">
+            Run Mode
+          </button>
+
+          <button class="nav-item nav-gallery">
+            Gallery
+          </button>
+        </nav>
+    </div>
+
+    <!-- 日历脚本：固定 4x7 = 28 天窗口，并实时高亮“今天” -->
+<script>
+  // ========= 日历生成逻辑（你的原始代码） =========
+  const grid = document.getElementById("calendar-grid");
+
+  const today = new Date();
+  const todayDay = today.getDate();
+  const todayMonth = today.getMonth();
+  const todayYear = today.getFullYear();
+
+  // 从“今天往前 27 天”开始，一共 28 天，排成 4x7
+  const start = new Date(todayYear, todayMonth, todayDay - 27);
+
+  grid.innerHTML = "";
+
+  for (let i = 0; i < 28; i++) {
+    const d = new Date(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate() + i
+    );
+
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
+    cell.textContent = d.getDate(); // 显示真实日期数字（1–31，可能跨月）
+
+    // 如果是今天，就加 is-today，用 CSS 画圆圈
+    if (
+      d.getDate() === todayDay &&
+      d.getMonth() === todayMonth &&
+      d.getFullYear() === todayYear
+    ) {
+      cell.classList.add("is-today");
+    }
+
+    grid.appendChild(cell);
+  }
+
+  // ========= 点击跳转逻辑 =========
+
+  // Calendar square
+  const calendarCard = document.querySelector(".calendar-blue");
+  if (calendarCard) {
+    calendarCard.addEventListener("click", () => {
+      window.location.href = "calendar.html"; // 改成你自己的文件名
+    });
+  }
+
+  // Progress square
+  const progressCard = document.querySelector(".progress-red");
+  if (progressCard) {
+    progressCard.addEventListener("click", () => {
+      window.location.href = "progress.html"; // 改成你自己的文件名
+    });
+  }
+
+  // ⭐ Plan：形状 + 文本，都能点
+  const planShape = document.querySelector(".plan-shape");
+  const planHeader = document.querySelector(".plan-header");
+
+  function goPlan() {
+    console.log("Plan clicked, go to plan.html");
+    window.location.href = "plan.html";      // 文件名要和你刚才建的一样
+  }
+
+  if (planShape) {
+    planShape.addEventListener("click", goPlan);
+  }
+
+  if (planHeader) {
+    planHeader.addEventListener("click", goPlan);
+  }
+
+  // ========= 底部导航 =========
+
+  // Home
+  const homeBtn = document.querySelector(".nav-home");
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "home.html";    // 你的首页文件名
+    });
+  }
+
+  // Run Mode
+  const runBtn = document.querySelector(".nav-run");
+  if (runBtn) {
+    runBtn.addEventListener("click", () => {
+      window.location.href = "runmode.html";
+    });
+  }
+
+  // Gallery
+  const galleryBtn = document.querySelector(".nav-gallery");
+  if (galleryBtn) {
+    galleryBtn.addEventListener("click", () => {
+      window.location.href = "gallery.html";
+    });
+  }
+</script>
+
+  </body>
+</html>

@@ -18,6 +18,7 @@ function generatePixels() {
   main.fillStyle = "#E0FFFE";
   main.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
 
+
   small.clearRect(0, 0, smallCanvas.width, smallCanvas.height);
 let route = [];
 let x = smallCanvas.width / 2;
@@ -28,9 +29,19 @@ for(let i = 0; i < 1000; i++){
 	route.push({ x, y });   
 }
 
+const color1 = "#F02AF5";
+const color2 = "#FFD93D";
+const color3 = "#00C9A7";
+const color4 = "#7B61FF";
+
+    // 调色板（想加颜色就在这里多写几个变量并放进数组）
+const palette = [color1, color2, color3, color4];
+
 const pixel = 8;
 
-small.fillStyle = "#F02AF5";
+small.fillStyle = "palette";
+
+   
 
 for(let i = 0; i< route.length; i++){
 let p = route[i];

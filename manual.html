@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bias Machine – Manual Control Prototype</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: #050611;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 1200px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left, #272b46 0, #050611 55%);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .layout-side {
+      flex-direction: row;
+    }
+
+    .layout-stacked {
+      flex-direction: column;
+    }
+
+    .sidebar {
+      flex: 0 0 280px;
+      border-radius: 12px;
+      background: rgba(7, 9, 25, 0.9);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a0a4ff;
+      margin-bottom: 4px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #b5b7d9;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 8px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #d2d3f7;
+    }
+
+    .control-group span.value {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(10, 11, 32, 0.9);
+      color: #f5f5f5;
+      font-size: 12px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
+      font-weight: 500;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 24px rgba(99, 102, 241, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #050611;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #videoWrapper {
+      position: relative;
+      max-width: 640px;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 0 26px rgba(0, 0, 0, 0.8);
+      transition: transform 0.25s ease;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform-origin: center center;
+      transition: filter 0.25s ease;
+    }
+
+    #labelOverlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-size: 11px;
+    }
+
+    .label {
+      position: absolute;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(5, 6, 17, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #f1f5f9;
+      white-space: nowrap;
+      backdrop-filter: blur(6px);
+      max-width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .label.tech {
+      border-color: rgba(96, 165, 250, 0.9);
+      color: #bfdbfe;
+    }
+
+    .label.social {
+      border-color: rgba(248, 113, 113, 0.9);
+      color: #fecaca;
+    }
+
+    .footer-text {
+      font-size: 11px;
+      color: #9ca3c9;
+      line-height: 1.5;
+    }
+
+    .status-bar {
+      font-size: 11px;
+      color: #c4c6ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+      background: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    }
+
+    .status-dot.on {
+      background: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .small {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    .shake video {
+      animation: shake 0.3s infinite alternate;
+    }
+
+    @keyframes shake {
+      from { transform: translateX(-2px); }
+      to   { transform: translateX(2px); }
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        flex-direction: column;
+      }
+      .sidebar {
+        flex: 0 0 auto;
+      }
+    }
+
+    /* Hidden canvas for simple analysis */
+    #analyzerCanvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app layout-side" id="app">
+    <!-- Sidebar: manual controls -->
+    <aside class="sidebar">
+      <div>
+        <div class="section-title">Bias Machine</div>
+        <div class="title">Manual Control Panel</div>
+        <div class="subtitle">
+          Manually tweak “system” parameters and watch how your live image is reshaped,
+          distorted, and labeled through a technical and social lens.
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="techBias">
+          Tech Bias Level
+          <span class="value" id="techBiasValue">50</span>
+        </label>
+        <input id="techBias" type="range" min="0" max="100" value="50" />
+      </div>
+
+      <div class="control-group">
+        <label for="socialBias">
+          Social Bias Level
+          <span class="value" id="socialBiasValue">50</span>
+        </label>
+        <input id="socialBias" type="range" min="0" max="100" value="50" />
+      </div>
+
+      <div class="control-group">
+        <label for="distortionType">Distortion Type</label>
+        <select id="distortionType">
+          <option value="none">None</option>
+          <option value="stretch">Stretch</option>
+          <option value="tilt">Tilt</option>
+          <option value="shake">Glitch / Shake</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="colorMode">Color Mode</label>
+        <select id="colorMode">
+          <option value="neutral">Neutral</option>
+          <option value="cold">Cold Blue</option>
+          <option value="alert">Alert Red</option>
+          <option value="mono">Monochrome</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="labelDensity">
+          Label Density
+          <span class="value" id="labelDensityValue">4</span>
+        </label>
+        <input id="labelDensity" type="range" min="0" max="10" value="4" />
+      </div>
+
+      <div class="control-group">
+        <label for="noiseLevel">
+          Noise / Glitch
+          <span class="value" id="noiseLevelValue">30</span>
+        </label>
+        <input id="noiseLevel" type="range" min="0" max="100" value="30" />
+      </div>
+
+      <div class="control-group">
+        <label for="layoutStyle">Layout Style</label>
+        <select id="layoutStyle">
+          <option value="side">Side-by-side</option>
+          <option value="stacked">Stacked (vertical)</option>
+        </select>
+      </div>
+
+      <div class="footer-text">
+        This is a fully manual prototype. The system now reacts loosely to your
+        presence (brightness and motion), but still simplifies you through
+        rough metrics and biased labels.
+      </div>
+    </aside>
+
+    <!-- Main: camera + generated overlay -->
+    <main class="main">
+      <div class="header-row">
+        <div>
+          <div class="section-title">Live Feed</div>
+          <div class="subtitle">
+            Once the camera is on, the right panel reacts in real time to your sliders
+            and to coarse readings of the image in front of the camera.
+          </div>
+        </div>
+        <button id="startButton">Start Camera</button>
+      </div>
+
+      <div class="preview-wrapper">
+        <div id="videoWrapper">
+          <video id="video" autoplay playsinline></video>
+          <div id="labelOverlay"></div>
+        </div>
+        <canvas id="analyzerCanvas" width="320" height="240"></canvas>
+      </div>
+
+      <div class="status-bar">
+        <div>
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Camera off</span>
+        </div>
+        <div class="small">
+          Move closer, step back, stay still, wave your hand. Then push Tech / Social
+          Bias, Label Density, and Noise to extremes and see how the “system view”
+          of you shifts.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const videoWrapper = document.getElementById("videoWrapper");
+    const overlay = document.getElementById("labelOverlay");
+    const app = document.getElementById("app");
+    const analyzerCanvas = document.getElementById("analyzerCanvas");
+    const analyzerCtx = analyzerCanvas.getContext("2d");
+
+    const startButton = document.getElementById("startButton");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+
+    const techBias = document.getElementById("techBias");
+    const techBiasValue = document.getElementById("techBiasValue");
+    const socialBias = document.getElementById("socialBias");
+    const socialBiasValue = document.getElementById("socialBiasValue");
+    const distortionType = document.getElementById("distortionType");
+    const colorMode = document.getElementById("colorMode");
+    const labelDensity = document.getElementById("labelDensity");
+    const labelDensityValue = document.getElementById("labelDensityValue");
+    const noiseLevel = document.getElementById("noiseLevel");
+    const noiseLevelValue = document.getElementById("noiseLevelValue");
+    const layoutStyle = document.getElementById("layoutStyle");
+
+    // Very coarse "profile" state derived from the video
+    let avgBrightness = 0;
+    let prevBrightness = null;
+    let motionScore = 0;
+    let brightnessLevel = "medium"; // "dark" | "medium" | "bright"
+    let motionLevel = "still";      // "still" | "moving"
+    let analysisIntervalId = null;
+
+    // Phrase templates keyed by coarse states
+    const techTemplates = {
+      "dark_still": [
+        "Late-hour, low-motion presence detected.",
+        "Dim scene: quiet but still monitored.",
+        "Low light, low movement: background activity logged."
+      ],
+      "dark_moving": [
+        "Movement detected in a dark environment.",
+        "Tracking motion through low visibility.",
+        "Shifting silhouette in the system's periphery."
+      ],
+      "medium_still": [
+        "Stable signal with minimal movement.",
+        "Calm posture: treated as low-risk routine.",
+        "Consistent frame: easy to file and forget."
+      ],
+      "medium_moving": [
+        "Moderate activity pattern observed.",
+        "Frequent micro-adjustments: engagement assumed.",
+        "Motion within normal operating range."
+      ],
+      "bright_still": [
+        "High visibility, low motion: fully exposed, barely moving.",
+        "Well-lit subject held in place.",
+        "Clear signal: perfectly legible to the system."
+      ],
+      "bright_moving": [
+        "High activity in a bright environment.",
+        "Clear, trackable movement in full light.",
+        "Every gesture is easy to capture."
+      ]
+    };
+
+    const socialTemplates = {
+      "dark_still": [
+        "Looks tired, assumed to be fine.",
+        "Quiet in the dark: read as withdrawn.",
+        "Staying still, treated as passive."
+      ],
+      "dark_moving": [
+        "Moving in the dark: read as restless.",
+        "Activity after hours: assumed unstable schedule.",
+        "Not fully visible, still being judged."
+      ],
+      "medium_still": [
+        "Stillness interpreted as composure.",
+        "Neutral pose: labeled as 'ordinary'.",
+        "Not moving much, quickly generalized."
+      ],
+      "medium_moving": [
+        "Movement read as energy, not context.",
+        "Restless body, assigned as 'busy type'.",
+        "Shifts in posture turned into a personality."
+      ],
+      "bright_still": [
+        "Well-lit and still: expected to perform.",
+        "Visible and present, taken for granted.",
+        "Clearly seen, rarely understood."
+      ],
+      "bright_moving": [
+        "Lively in the light: assumed confident.",
+        "Expressive motion turned into a stereotype.",
+        "High visibility, high projection, low nuance."
+      ]
+    };
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+        video.srcObject = stream;
+        statusDot.classList.add("on");
+        statusText.textContent = "Camera on – you are being classified";
+        startButton.disabled = true;
+
+        // Start coarse analysis loop
+        if (analysisIntervalId) clearInterval(analysisIntervalId);
+        analysisIntervalId = setInterval(analyzeFrame, 500);
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = "Unable to access camera: " + err.message;
+      }
+    }
+
+    function updateLayout() {
+      if (layoutStyle.value === "side") {
+        app.classList.remove("layout-stacked");
+        app.classList.add("layout-side");
+      } else {
+        app.classList.remove("layout-side");
+        app.classList.add("layout-stacked");
+      }
+    }
+
+    function updateVisuals() {
+      const tech = techBias.value / 100;
+      const social = socialBias.value / 100;
+      const noise = noiseLevel.value / 100;
+
+      techBiasValue.textContent = techBias.value;
+      socialBiasValue.textContent = socialBias.value;
+      labelDensityValue.textContent = labelDensity.value;
+      noiseLevelValue.textContent = noiseLevel.value;
+
+      // Layout
+      updateLayout();
+
+      // Distortion (geometry)
+      videoWrapper.classList.remove("shake");
+      let rotateDeg = 0;
+      let scaleX = 1;
+      let scaleY = 1;
+
+      const type = distortionType.value;
+      if (type === "stretch") {
+        // Stretch horizontally with tech bias
+        scaleX = 1 + tech * 0.5; // 1 ~ 1.5
+      } else if (type === "tilt") {
+        // Slight tilt based on tech bias
+        rotateDeg = (tech - 0.5) * 18; // -9° ~ +9°
+      } else if (type === "shake") {
+        // Glitch-style shake
+        videoWrapper.classList.add("shake");
+      }
+
+      videoWrapper.style.transform =
+        "scale(" + scaleX.toFixed(2) + "," + scaleY.toFixed(2) + ") rotate(" +
+        rotateDeg.toFixed(2) + "deg)";
+
+      // Color + noise (filter)
+      const mode = colorMode.value;
+      let filters = [];
+
+      if (mode === "cold") {
+        filters.push("saturate(0.8)", "hue-rotate(210deg)");
+      } else if (mode === "alert") {
+        filters.push("saturate(1.3)", "hue-rotate(-10deg)");
+      } else if (mode === "mono") {
+        filters.push("grayscale(1)", "contrast(1.3)");
+      }
+
+      if (noise > 0.01) {
+        const blurPx = (noise * 3).toFixed(2);
+        const contrast = (1 + noise * 0.8).toFixed(2);
+        filters.push("blur(" + blurPx + "px)", "contrast(" + contrast + ")");
+      }
+
+      video.style.filter = filters.join(" ");
+
+      // Labels overlay
+      updateLabels();
+    }
+
+    function analyzeFrame() {
+      if (!video.srcObject) return;
+      const w = analyzerCanvas.width;
+      const h = analyzerCanvas.height;
+
+      // Draw current frame into a small hidden canvas
+      analyzerCtx.drawImage(video, 0, 0, w, h);
+      const imgData = analyzerCtx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+
+      let sumBrightness = 0;
+      let count = 0;
+
+      // Sample every 10 pixels horizontally and vertically to reduce cost
+      const step = 10;
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const idx = (y * w + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          // perceived brightness
+          const br = 0.299 * r + 0.587 * g + 0.114 * b;
+          sumBrightness += br;
+          count++;
+        }
+      }
+
+      if (count === 0) return;
+      const newAvg = sumBrightness / count;
+      avgBrightness = newAvg;
+
+      // Very rough motion estimate: change in average brightness over time
+      if (prevBrightness == null) {
+        motionScore = 0;
+      } else {
+        motionScore = Math.abs(newAvg - prevBrightness);
+      }
+      prevBrightness = newAvg;
+
+      // Quantize brightness into three buckets
+      if (avgBrightness < 90) {
+        brightnessLevel = "dark";
+      } else if (avgBrightness > 170) {
+        brightnessLevel = "bright";
+      } else {
+        brightnessLevel = "medium";
+      }
+
+      // Quantize motion into two buckets
+      if (motionScore < 3) {
+        motionLevel = "still";
+      } else {
+        motionLevel = "moving";
+      }
+
+      // Update labels to reflect new state
+      updateLabels();
+    }
+
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getTechPhrase() {
+      const key = `${brightnessLevel}_${motionLevel}`;
+      const baseList = techTemplates[key] || techTemplates["medium_still"];
+      // As tech bias goes higher, prefer the harsher / more objectifying tone
+      const bias = techBias.value / 100;
+      // For now we just pick randomly; you could later weight choices by bias
+      return randomFrom(baseList);
+    }
+
+    function getSocialPhrase() {
+      const key = `${brightnessLevel}_${motionLevel}`;
+      const baseList = socialTemplates[key] || socialTemplates["medium_still"];
+      const bias = socialBias.value / 100;
+      // Higher social bias could later be used to swap to more judgmental lines
+      return randomFrom(baseList);
+    }
+
+    function updateLabels() {
+      const count = parseInt(labelDensity.value, 10);
+      overlay.innerHTML = "";
+
+      if (count === 0) return;
+
+      const w = overlay.clientWidth || 640;
+      const h = overlay.clientHeight || 480;
+
+      for (let i = 0; i < count; i++) {
+        const isTech = i % 2 === 0;
+        const div = document.createElement("div");
+        div.classList.add("label");
+        div.classList.add(isTech ? "tech" : "social");
+
+        const text = isTech ? getTechPhrase() : getSocialPhrase();
+        div.textContent = text;
+
+        // Roughly distribute labels without completely blocking the center
+        const padding = 16;
+        const top = Math.random() * (h - 2 * padding) + padding;
+        const left = Math.random() * (w - 2 * padding) + padding;
+
+        div.style.top = top + "px";
+        div.style.left = left + "px";
+
+        overlay.appendChild(div);
+      }
+    }
+
+    // Event bindings
+    startButton.addEventListener("click", startCamera);
+
+    [
+      techBias,
+      socialBias,
+      distortionType,
+      colorMode,
+      labelDensity,
+      noiseLevel,
+      layoutStyle,
+    ].forEach((el) => {
+      el.addEventListener("input", updateVisuals);
+      el.addEventListener("change", updateVisuals);
+    });
+
+    // Initial state
+    updateVisuals();
+  </script>
+</body>
+</html>
