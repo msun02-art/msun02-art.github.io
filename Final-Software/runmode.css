@@ -1,8 +1,9 @@
 .iphone-pro {
   background-color: #ffffff;
   width: 100%;
-  min-width: 402px;
+  max-width: 402px;      /* 手机上最多这么宽 */
   min-height: 874px;
+  margin: 0 auto;        /* 居中 */
   position: relative;
 }
 
@@ -42,12 +43,14 @@
 
 .gpsroute-area {
   position: absolute;
-  top: 140px;       
-  bottom: 250px;        
-  left: 40px;
-  right: 40px;
+  top: 120px;              /* 上方空一点 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 80px);   /* 左右各 40px 留白 */
+  height: 420px;              /* 固定高度，看着像你 figma 那样 */
+  
   background-color: #B0DAFF;
-  padding: 30px 30px;
+  padding: 30px;
   box-sizing: border-box;
   border-radius: 20px;
 }
@@ -60,26 +63,25 @@
   border-radius: 18px;
 }
 
-
-.start-btn{
+.start-btn {
   position: absolute;
-  bottom: 120px;
+  bottom: 140px;              /* 距离底部导航再留一点空隙 */
   left: 50%;
   transform: translateX(-50%);
+  
+  width: 70%;                 /* 例如屏幕宽度的 70% */
+  max-width: 320px;           /* 再给个最大宽度防止太大 */
   height: 60px;
-  width: 1000px;
+  
   background-color: #57a368;
   border: none;
   border-radius: 30px;
   color: #F4FF75;
   font-size: 20px;
   font-family: "Carlito", sans-serif;
-  font-weight: semibold;
+  font-weight: 600;
   cursor: pointer;
 }
-
-
-
 
 
 
