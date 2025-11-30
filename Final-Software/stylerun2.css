@@ -1,11 +1,20 @@
-.iphone-pro {
-  background-color: white;
+/* 外层灰底，只是方便你在电脑上预览手机 */
+.wrapper-main {
   width: 100%;
-  min-width: 402px;
+  padding: 40px 0;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+/* “手机壳” */
+.iphone-pro {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 402px;
   min-height: 874px;
   position: relative;
 }
- 
 .iphone-pro .appname {
   position: absolute;
   left: 50%;

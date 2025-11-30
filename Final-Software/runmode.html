@@ -4,182 +4,186 @@
     <title>FUNRUN – Runmode</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
+
     <link rel="stylesheet" href="globals.css" />
     <link rel="stylesheet" href="runmode.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"/>
   </head>
+
   <body>
+    <div class="wrapper-main">
+      <div class="iphone-pro">
+        <!-- 顶部 -->
+        <header class="top-bar">
+          <div class="user-info">
+            <div class="avatar-circle"></div>
+            <span class="username">Username</span>
+          </div>
+        </header>
 
-  <div class="wrapper-main">
-    <div class="iphone-pro">
-      <header class="top-bar">
-        <div class="user-info">
-          <div class="avatar-circle"></div>
-          <span class="username">Username</span>
+        <div class="top-divider"></div>
+
+        <!-- 中间蓝色 GPS 区域 -->
+        <div class="gpsroute-area">
+          <canvas id="routeCanvas"></canvas>
         </div>
-      </header>
 
-      <div class="top-divider"></div>
+        <!-- START 按钮（在手机里面） -->
+        <button class="start-btn" id="start-btn">START</button>
 
-    <div class="gpsroute-area">
-  <canvas id="routeCanvas"></canvas>
-</div>
+        <!-- ❗ 底部导航：在 iphone-pro 里面 -->
+        <nav class="bottom-nav">
+          <button class="nav-item nav-home active">Home</button>
+          <button class="nav-item nav-run">Run Mode</button>
+          <button class="nav-item nav-gallery">Gallery</button>
+        </nav>
+      </div> <!-- /iphone-pro -->
+    </div>   <!-- /wrapper-main -->
 
-    </div>
- <button class="start-btn" id="start-btn">START</button>
+    <!-- JS：GPS 画路线 -->
+    <script>
+      const canvas = document.getElementById("routeCanvas");
+      const ctx = canvas.getContext("2d");
 
+      let points = [];
+      let minLat, maxLat, minLng, maxLng;
+      let watchId = null;
 
-
-
-            <!-- 底部导航栏 -->
-      <nav class="bottom-nav">
-          <button class="nav-item nav-home active" aria-label="Home">
-            Home
-          </button>
-
-          <button class="nav-item nav-run">
-            Run Mode
-          </button>
-
-          <button class="nav-item nav-gallery">
-            Gallery
-          </button>
-      </nav>
-  </div>
-</div>
-
-<script>
-  const canvas = document.getElementById("routeCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let points = [];
-  let minLat, maxLat, minLng, maxLng;
-  let watchId = null;
-
-  function resizeCanvas() {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width;
-    canvas.height = rect.height;
-    redrawRoute();
-  }
-
-  window.addEventListener("resize", resizeCanvas);
-
-  function updateBounds(lat, lng) {
-    if (points.length === 0) {
-      minLat = maxLat = lat;
-      minLng = maxLng = lng;
-    } else {
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-      if (lng < minLng) minLng = lng;
-      if (lng > maxLng) maxLng = lng;
-    }
-  }
-
-  function latLngToXY(lat, lng) {
-    const padding = 30;
-    const latRange = Math.max(maxLat - minLat || 1e-9, 1e-9);
-    const lngRange = Math.max(maxLng - minLng || 1e-9, 1e-9);
-
-    const x =
-      padding +
-      ((lng - minLng) / lngRange) * (canvas.width - padding * 2);
-
-    const y =
-      padding +
-      ((maxLat - lat) / latRange) * (canvas.height - padding * 2);
-
-    return { x, y };
-  }
-
-  function redrawRoute() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (points.length === 0) return;
-
-    // 线
-    ctx.lineWidth = 6;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#F4FF75";
-
-    ctx.beginPath();
-    points.forEach((p, index) => {
-      const { x, y } = latLngToXY(p.lat, p.lng);
-      if (index === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // 起点
-    const start = latLngToXY(points[0].lat, points[0].lng);
-    ctx.fillStyle = "#F4FF75";
-    ctx.beginPath();
-    ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 当前点
-    const last = latLngToXY(points[points.length - 1].lat, points[points.length - 1].lng);
-    ctx.fillStyle = "#57a368";
-    ctx.beginPath();
-    ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function startGPSRoute() {
-    if (!("geolocation" in navigator)) {
-      alert("当前设备不支持定位 / 或浏览器禁用了 GPS");
-      return;
-    }
-
-    if (watchId !== null) return; // 已经在跑了
-
-    points = []; // 每次点击先清空旧路线
-
-    watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-
-        points.push({ lat, lng });
-        if (points.length > 2000) points.shift();
-
-        updateBounds(lat, lng);
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width  = rect.width;
+        canvas.height = rect.height;
         redrawRoute();
-      },
-      (err) => {
-        console.log("获取 GPS 失败:", err);
-        alert("无法获取位置信息（可能是权限 / http 链接 / 浏览器设置）");
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 1000,
-        timeout: 10000,
       }
-    );
-  }
 
-  function stopGPSRoute() {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-  }
+      window.addEventListener("resize", resizeCanvas);
 
-  window.addEventListener("load", () => {
-    resizeCanvas();
+      function updateBounds(lat, lng) {
+        if (points.length === 0) {
+          minLat = maxLat = lat;
+          minLng = maxLng = lng;
+        } else {
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+          if (lng < minLng) minLng = lng;
+          if (lng > maxLng) maxLng = lng;
+        }
+      }
 
-    const startBtn = document.getElementById("start-btn");
-    if (!startBtn) {
-      alert("没找到 #start-btn，检查一下 HTML 里的 id");
-      return;
-    }
+      function latLngToXY(lat, lng) {
+        const padding = 30;
+        const latRange = Math.max(maxLat - minLat || 1e-9, 1e-9);
+        const lngRange = Math.max(maxLng - minLng || 1e-9, 1e-9);
 
-    startBtn.addEventListener("click", () => {
-      startGPSRoute();
-      startBtn.textContent = "Running...";
+        const x =
+          padding +
+          ((lng - minLng) / lngRange) * (canvas.width - padding * 2);
+
+        const y =
+          padding +
+          ((maxLat - lat) / latRange) * (canvas.height - padding * 2);
+
+        return { x, y };
+      }
+
+      function redrawRoute() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (points.length === 0) return;
+
+        // 路线
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#F4FF75";
+        ctx.beginPath();
+
+        points.forEach((p, index) => {
+          const { x, y } = latLngToXY(p.lat, p.lng);
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+
+        ctx.stroke();
+
+        // 起点
+        const start = latLngToXY(points[0].lat, points[0].lng);
+        ctx.fillStyle = "#F4FF75";
+        ctx.beginPath();
+        ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 当前点
+        const last = latLngToXY(points[points.length - 1].lat, points[points.length - 1].lng);
+        ctx.fillStyle = "#57a368";
+        ctx.beginPath();
+        ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function startGPSRoute() {
+        if (!("geolocation" in navigator)) {
+          alert("当前设备不支持定位 / 或浏览器禁用了 GPS");
+          return;
+        }
+
+        if (watchId !== null) return; // 已经在跑了
+
+        points = [];
+
+        watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            points.push({ lat, lng });
+            if (points.length > 2000) points.shift();
+
+            updateBounds(lat, lng);
+            redrawRoute();
+          },
+          (err) => {
+            console.log("获取 GPS 失败:", err);
+            alert("无法获取位置信息（可能是权限 / http 链接 / 浏览器设置）");
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 1000,
+            timeout: 10000,
+          }
+        );
+      }
+
+      window.addEventListener("load", () => {
+        resizeCanvas();
+
+        const startBtn = document.getElementById("start-btn");
+        startBtn.addEventListener("click", () => {
+          startGPSRoute();
+          startBtn.textContent = "Running...";
+        });
+      });
+        // Home
+  const homeBtn = document.querySelector(".nav-home");
+  if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "homepage.html";    // 你的首页文件名
     });
-  });
-</script>
+  }
+
+  // Run Mode
+  const runBtn = document.querySelector(".nav-run");
+  if (runBtn) {
+    runBtn.addEventListener("click", () => {
+      window.location.href = "runmode.html";
+    });
+  }
+
+  // Gallery
+  const galleryBtn = document.querySelector(".nav-gallery");
+  if (galleryBtn) {
+    galleryBtn.addEventListener("click", () => {
+      window.location.href = "gallery.html";
+    });
+  }
+    </script>
   </body>
 </html>

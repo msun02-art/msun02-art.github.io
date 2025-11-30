@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="globals.css" />
   </head>
   <body>
+    <div class="wrapper-main">
     <div class="iphone-pro">
       <header class="top-bar">
         <div class="user-info">
@@ -61,7 +62,7 @@
           </button>
         </nav>
     </div>
-
+</div>
     <!-- 日历脚本：固定 4x7 = 28 天窗口，并实时高亮“今天” -->
 <script>
   // ========= 日历生成逻辑（你的原始代码） =========
@@ -141,7 +142,7 @@
   const homeBtn = document.querySelector(".nav-home");
   if (homeBtn) {
     homeBtn.addEventListener("click", () => {
-      window.location.href = "home.html";    // 你的首页文件名
+      window.location.href = "homepage.html";    // 你的首页文件名
     });
   }
 
