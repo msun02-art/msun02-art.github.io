@@ -1,10 +1,18 @@
+.wrapper-main{
+  width: 1000px;
+  padding: 100px 0;
+  margin:0 auto;
+  background-color: #e0e0e0;
+}
+
+/* 手机壳 */
 .iphone-pro {
   background-color: #ffffff;
   width: 100%;
-  max-width: 402px;      /* 手机上最多这么宽 */
+  max-width: 402px;
   min-height: 874px;
-  margin: 0 auto;        /* 居中 */
-  position: relative;
+  margin: 0 auto;
+  position: relative;          /* 关键：bottom-nav 的参照 */
 }
 
 /* 顶部栏 */
@@ -91,17 +99,16 @@
 
 
 
-/* 底部导航栏容器 */
 .bottom-nav {
   position: absolute;
   left: 0;
   bottom: 0;
   height: 100px;
-  width: 100%;
+  width: 100%;                 /* 现在是 iphone-pro 的 100%，不是 1000px 了 */
   background-color: #f4ff75;
 
   display: flex;
-  align-items: center;          /* 垂直居中 */
+  align-items: center;
   justify-content: space-around;
   padding: 0 30px;
 }
