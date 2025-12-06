@@ -230,257 +230,296 @@
   </div>
 
   <script>
-    const canvas   = document.getElementById("routeCanvas");
-    const ctx      = canvas.getContext("2d");
-    const statusEl = document.getElementById("gps-status");
+  const canvas   = document.getElementById("routeCanvas");
+  const ctx      = canvas.getContext("2d");
+  const statusEl = document.getElementById("gps-status");
 
-    // 真实 GPS 点（用来算路径 & 方向）
-    let geoPoints  = [];   // {lat, lng}
-    // 画布上的点（已经映射好的像素坐标）
-    let pathPoints = [];   // {x, y}
-    let watchId    = null;
+  let geoPoints  = [];   // {lat, lng}
+  let pathPoints = [];   // {x, y}
+  let watchId    = null;
 
-    let running    = false; // Start / Pause
-    let stopped    = false; // End 之后彻底停止
+  let running    = false;
+  let stopped    = false;
 
-    // 用于把经纬度映射到画布坐标
-    let originLat = null;
-    let originLng = null;
-    const SCALE   = 80000; // 数值越大，画面越“放大”
+  // 映射经纬度 → 画布坐标
+  let originLat = null;
+  let originLng = null;
 
-    function setStatus(text) {
-      statusEl.textContent = text;
-      console.log("[STATUS]", text);
+  const PIXELS_PER_METER   = 0.7;  // 每 1 米在画布上多少像素（可以调大小）
+  const MIN_MOVE_METERS    = 1.0;  // 小于这个距离不画（过滤抖动）
+  const MAX_POINTS_STORED  = 4000; // 最多保存多少点，防止无限增长
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+    console.log("[STATUS]", text);
+  }
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+    // 画布尺寸变化后，根据 geoPoints 重新计算 pathPoints
+    recomputePathFromGeo();
+    redrawPath();
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+
+  // 计算两点之间的距离（米）——粗略够用
+  function distanceMeters(lat1, lng1, lat2, lng2) {
+    const R = 6371000; // 地球半径（米）
+    const rad = Math.PI / 180;
+    const dLat = (lat2 - lat1) * rad;
+    const dLng = (lng2 - lng1) * rad;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // 经纬度 → 画布坐标
+  function geoToCanvas(lat, lng) {
+    if (originLat === null || originLng === null) {
+      originLat = lat;
+      originLng = lng;
     }
 
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width  = rect.width;
-      canvas.height = rect.height;
-      // 画布尺寸变化后，重新根据 geoPoints 计算 pathPoints
-      recomputePathFromGeo();
-      redrawPath();
-    }
+    // 按“米”来算相对位移
+    const metersX = distanceMeters(originLat, originLng, originLat, lng); // 经度方向
+    const metersY = distanceMeters(originLat, originLng, lat, originLng); // 纬度方向
 
-    window.addEventListener("resize", resizeCanvas);
+    // 判断方向（左/右，上/下）
+    const signX = (lng >= originLng) ? 1 : -1;
+    const signY = (lat >= originLat) ? -1 : 1; // 画布 y 向下，纬度增大是向北
 
-    function geoToCanvas(lat, lng) {
-      // 第一次用当前点当原点
-      if (originLat === null || originLng === null) {
-        originLat = lat;
-        originLng = lng;
-      }
+    const dx = signX * metersX * PIXELS_PER_METER;
+    const dy = signY * metersY * PIXELS_PER_METER;
 
-      const dx = (lng - originLng) * SCALE;
-      const dy = -(lat - originLat) * SCALE; // 纬度增大 = 向北 = 画布 y 减小
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
 
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
+    return {
+      x: cx + dx,
+      y: cy + dy,
+    };
+  }
 
-      return {
-        x: cx + dx,
-        y: cy + dy,
-      };
-    }
+  function recomputePathFromGeo() {
+    pathPoints = [];
+    if (geoPoints.length === 0) return;
 
-    function recomputePathFromGeo() {
-      pathPoints = [];
-      if (geoPoints.length === 0) return;
-
-      geoPoints.forEach((g) => {
-        const p = geoToCanvas(g.lat, g.lng);
-        pathPoints.push(p);
-      });
-    }
-
-    function redrawPath() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (pathPoints.length === 0) return;
-
-      // 路线
-      ctx.lineWidth = 6;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#F4FF75";
-
-      ctx.beginPath();
-      pathPoints.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
-      ctx.stroke();
-
-      // 起点
-      const start = pathPoints[0];
-      ctx.fillStyle = "#F4FF75";
-      ctx.beginPath();
-      ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 终点（当前点）
-      const last = pathPoints[pathPoints.length - 1];
-      ctx.fillStyle = "#57a368";
-      ctx.beginPath();
-      ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function handlePosition(pos) {
-      if (!running || stopped) return;
-
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      console.log("GPS:", lat, lng);
-
-      const point = { lat, lng };
-      geoPoints.push(point);
-
-      // 根据新的 geoPoints 映射到画布
-      const canvasPoint = geoToCanvas(lat, lng);
-      pathPoints.push(canvasPoint);
-
-      // 不再像之前那样“自己往前动画”，
-      // 而是每次 GPS 更新时添加一段线段，这样方向和速度都真实跟随你。
-      redrawPath();
-
-      setStatus(
-        "GPS active.\nPoints: " + geoPoints.length +
-        "\nlat: " + lat.toFixed(6) +
-        "  lng: " + lng.toFixed(6)
-      );
-    }
-
-    function handlePositionError(err) {
-      console.log("获取 GPS 失败:", err.code, err.message, err);
-
-      let msg = "";
-      if (err.code === 1) {
-        msg =
-          "浏览器阻止了定位权限。\n检查：Safari / 浏览器的站点设置 → 允许位置。";
-      } else if (err.code === 2) {
-        msg =
-          "设备当前无法获取位置信息（Position unavailable）。\n可能在室内、或系统定位被关。";
-      } else if (err.code === 3) {
-        msg =
-          "获取位置信息超时（Timeout）。\n可以尝试等待更久或到室外。";
-      } else {
-        msg = "未知错误：" + err.message;
-      }
-
-      alert("无法获取位置信息：\n" + msg);
-      setStatus("GPS error: " + msg);
-    }
-
-    function startWatch() {
-      if (!("geolocation" in navigator)) {
-        alert("当前设备不支持定位 / 浏览器禁用了 geolocation");
-        setStatus("Geolocation API not available.");
-        return;
-      }
-
-      console.log(
-        "[INFO] Running on protocol:",
-        location.protocol,
-        "host:",
-        location.hostname
-      );
-
-      if (watchId !== null) return;
-
-      watchId = navigator.geolocation.watchPosition(
-        handlePosition,
-        handlePositionError,
-        {
-          enableHighAccuracy: true,
-          maximumAge: 1000,
-          timeout: 30000,
-        }
-      );
-      console.log("start watchPosition, id =", watchId);
-    }
-
-    function stopWatch() {
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        console.log("clearWatch", watchId);
-        watchId = null;
-      }
-    }
-
-    function onStartClick() {
-      stopped    = false;
-      running    = true;
-      geoPoints  = [];
-      pathPoints = [];
-      originLat  = null;
-      originLng  = null;
-
-      const rect = canvas.getBoundingClientRect();
-      canvas.width  = rect.width;
-      canvas.height = rect.height;
-
-      setStatus("Waiting for GPS… start moving to draw your route.");
-      startWatch();
-    }
-
-    function onPauseClick(btn) {
-      if (!running) {
-        running = true;
-        setStatus("Resumed, drawing continues…");
-        btn.textContent = "Pause";
-      } else {
-        running = false;
-        setStatus("Paused.");
-        btn.textContent = "Resume";
-      }
-    }
-
-    function onEndClick() {
-      const ok = confirm("Finish this run?");
-      if (!ok) return;
-
-      running = false;
-      stopped = true;
-      stopWatch();
-      setStatus("Stopped. Points: " + geoPoints.length);
-
-      try {
-        // 把“当前画好的路线图”存成 PNG，给 pixel.html 用来生成 pixel art
-        const dataURL = canvas.toDataURL("image/png");
-        localStorage.setItem("funrunRouteImage", dataURL);
-        console.log("路线图片已保存到 localStorage");
-      } catch (e) {
-        console.log("保存路线图片失败:", e);
-      }
-
-      // 跳转到下一页做 pixel art
-      window.location.href = "pixel.html";
-    }
-
-    window.addEventListener("load", () => {
-      resizeCanvas();
-
-      const startBtn = document.getElementById("start-btn");
-      const controls = document.getElementById("run-controls");
-      const pauseBtn = document.getElementById("pause-btn");
-      const endBtn   = document.getElementById("end-btn");
-
-      controls.style.display = "none";
-      startBtn.style.display = "block";
-
-      startBtn.addEventListener("click", () => {
-        onStartClick();
-        startBtn.style.display = "none";
-        controls.style.display = "flex";
-      });
-
-      pauseBtn.addEventListener("click", () => {
-        onPauseClick(pauseBtn);
-      });
-
-      endBtn.addEventListener("click", () => {
-        onEndClick();
-      });
+    geoPoints.forEach((g) => {
+      const p = geoToCanvas(g.lat, g.lng);
+      pathPoints.push(p);
     });
-  </script>
+  }
+
+  function redrawPath() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (pathPoints.length === 0) return;
+
+    ctx.lineWidth = 6;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#F4FF75";
+
+    ctx.beginPath();
+    pathPoints.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+
+    // 起点
+    const start = pathPoints[0];
+    ctx.fillStyle = "#F4FF75";
+    ctx.beginPath();
+    ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 终点
+    const last = pathPoints[pathPoints.length - 1];
+    ctx.fillStyle = "#57a368";
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function handlePosition(pos) {
+    if (!running || stopped) return;
+
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    console.log("GPS:", lat, lng);
+
+    if (geoPoints.length === 0) {
+      // 第一个点，只作为起点
+      geoPoints.push({ lat, lng });
+      const p = geoToCanvas(lat, lng);
+      pathPoints.push(p);
+      redrawPath();
+      setStatus("GPS active.\nStart moving to draw your route.");
+      return;
+    }
+
+    const lastGeo = geoPoints[geoPoints.length - 1];
+    const dist = distanceMeters(lastGeo.lat, lastGeo.lng, lat, lng);
+
+    console.log("Move distance =", dist.toFixed(2), "m");
+
+    // 移动太少（GPS 抖动）就不画
+    if (dist < MIN_MOVE_METERS) {
+      return;
+    }
+
+    geoPoints.push({ lat, lng });
+    if (geoPoints.length > MAX_POINTS_STORED) geoPoints.shift();
+
+    const p = geoToCanvas(lat, lng);
+    pathPoints.push(p);
+    if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
+
+    redrawPath();
+
+    setStatus(
+      "Drawing… points: " + geoPoints.length +
+      "\nlast step: " + dist.toFixed(1) + " m" +
+      "\nlat: " + lat.toFixed(6) +
+      "  lng: " + lng.toFixed(6)
+    );
+  }
+
+  function handlePositionError(err) {
+    console.log("获取 GPS 失败:", err.code, err.message, err);
+
+    let msg = "";
+    if (err.code === 1) {
+      msg =
+        "浏览器阻止了定位权限。\n检查：Safari / 浏览器的站点设置 → 允许位置。";
+    } else if (err.code === 2) {
+      msg =
+        "设备当前无法获取位置信息（Position unavailable）。\n可能在室内、或系统定位被关。";
+    } else if (err.code === 3) {
+      msg =
+        "获取位置信息超时（Timeout）。\n可以尝试等待更久或到室外。";
+    } else {
+      msg = "未知错误：" + err.message;
+    }
+
+    alert("无法获取位置信息：\n" + msg);
+    setStatus("GPS error: " + msg);
+  }
+
+  function startWatch() {
+    if (!("geolocation" in navigator)) {
+      alert("当前设备不支持定位 / 浏览器禁用了 geolocation");
+      setStatus("Geolocation API not available.");
+      return;
+    }
+
+    console.log(
+      "[INFO] Running on protocol:",
+      location.protocol,
+      "host:",
+      location.hostname
+    );
+
+    if (watchId !== null) return;
+
+    watchId = navigator.geolocation.watchPosition(
+      handlePosition,
+      handlePositionError,
+      {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 30000,
+      }
+    );
+    console.log("start watchPosition, id =", watchId);
+  }
+
+  function stopWatch() {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      console.log("clearWatch", watchId);
+      watchId = null;
+    }
+  }
+
+  function onStartClick() {
+    stopped    = false;
+    running    = true;
+    geoPoints  = [];
+    pathPoints = [];
+    originLat  = null;
+    originLng  = null;
+
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+
+    setStatus("Waiting for GPS… start moving to draw your route.");
+    startWatch();
+  }
+
+  function onPauseClick(btn) {
+    if (!running) {
+      running = true;
+      setStatus("Resumed, drawing continues…");
+      btn.textContent = "Pause";
+    } else {
+      running = false;
+      setStatus("Paused.");
+      btn.textContent = "Resume";
+    }
+  }
+
+  function onEndClick() {
+    const ok = confirm("Finish this run?");
+    if (!ok) return;
+
+    running = false;
+    stopped = true;
+    stopWatch();
+    setStatus("Stopped. Points: " + geoPoints.length);
+
+    try {
+      const dataURL = canvas.toDataURL("image/png");
+      localStorage.setItem("funrunRouteImage", dataURL);
+      console.log("路线图片已保存到 localStorage");
+    } catch (e) {
+      console.log("保存路线图片失败:", e);
+    }
+
+    window.location.href = "pixel.html";
+  }
+
+  window.addEventListener("load", () => {
+    resizeCanvas();
+
+    const startBtn = document.getElementById("start-btn");
+    const controls = document.getElementById("run-controls");
+    const pauseBtn = document.getElementById("pause-btn");
+    const endBtn   = document.getElementById("end-btn");
+
+    controls.style.display = "none";
+    startBtn.style.display = "block";
+
+    startBtn.addEventListener("click", () => {
+      onStartClick();
+      startBtn.style.display = "none";
+      controls.style.display = "flex";
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      onPauseClick(pauseBtn);
+    });
+
+    endBtn.addEventListener("click", () => {
+      onEndClick();
+    });
+  });
+</script>
 </body>
 </html>
