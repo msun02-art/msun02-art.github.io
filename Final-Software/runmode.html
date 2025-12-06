@@ -234,21 +234,23 @@
     const ctx      = canvas.getContext("2d");
     const statusEl = document.getElementById("gps-status");
 
-    let geoPoints  = [];   // {lat, lng}
     let pathPoints = [];   // {x, y}
+    let geoPoints  = [];   // 仅用来统计/显示
     let watchId    = null;
 
     let running    = false;
     let stopped    = false;
 
-    // 映射经纬度 → 画布
-    let originLat = null;
-    let originLng = null;
+    // 线条动画相关
+    let lastAngle        = null;   // 当前前进方向（弧度）
+    let stepSpeed        = 60;     // 像素/秒（会根据 GPS 调整）
+    let lastFrameTime    = null;   // 上一帧时间戳
+    let lastGpsTimestamp = null;   // 上一次 GPS 时间（用于估计速度）
 
-    // 调整这两个：灵敏度 & 缩放
-    const PIXELS_PER_METER   = 3.0;   // 每 1 米 ≈ 3 像素
-    const MIN_MOVE_METERS    = 0.25;  // 移动 ≥ 25cm 才画，过滤抖动
-    const MAX_POINTS_STORED  = 4000;
+    const MIN_MOVE_METERS   = 0.5;  // 小于这个当抖动
+    const MIN_STEP_SPEED    = 20;   // 像素/秒下限
+    const MAX_STEP_SPEED    = 200;  // 上限
+    const MAX_POINTS_STORED = 4000;
 
     function setStatus(text) {
       statusEl.textContent = text;
@@ -259,60 +261,10 @@
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
-      recomputePathFromGeo();
       redrawPath();
     }
 
     window.addEventListener("resize", resizeCanvas);
-
-    // 粗略算两点间距离（米）
-    function distanceMeters(lat1, lng1, lat2, lng2) {
-      const R = 6371000; // 地球半径（米）
-      const rad = Math.PI / 180;
-      const dLat = (lat2 - lat1) * rad;
-      const dLng = (lng2 - lng1) * rad;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
-    // 经纬度 → 画布中心为原点的坐标
-    function geoToCanvas(lat, lng) {
-      if (originLat === null || originLng === null) {
-        originLat = lat;
-        originLng = lng;
-      }
-
-      const metersX = distanceMeters(originLat, originLng, originLat, lng);
-      const metersY = distanceMeters(originLat, originLng, lat, originLng);
-
-      const signX = (lng >= originLng) ? 1 : -1;
-      const signY = (lat >= originLat) ? -1 : 1; // 纬度越大偏北，画布 y 向上
-
-      const dx = signX * metersX * PIXELS_PER_METER;
-      const dy = signY * metersY * PIXELS_PER_METER;
-
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-
-      return {
-        x: cx + dx,
-        y: cy + dy,
-      };
-    }
-
-    function recomputePathFromGeo() {
-      pathPoints = [];
-      if (geoPoints.length === 0) return;
-
-      geoPoints.forEach((g) => {
-        const p = geoToCanvas(g.lat, g.lng);
-        pathPoints.push(p);
-      });
-    }
 
     function redrawPath() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -329,14 +281,12 @@
       });
       ctx.stroke();
 
-      // 起点
       const start = pathPoints[0];
       ctx.fillStyle = "#F4FF75";
       ctx.beginPath();
       ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
       ctx.fill();
 
-      // 终点
       const last = pathPoints[pathPoints.length - 1];
       ctx.fillStyle = "#57a368";
       ctx.beginPath();
@@ -344,20 +294,34 @@
       ctx.fill();
     }
 
+    // 简单距离估算（米）
+    function distanceMeters(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const rad = Math.PI / 180;
+      const dLat = (lat2 - lat1) * rad;
+      const dLng = (lng2 - lng1) * rad;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // GPS 回调：只负责更新方向 & 估算速度
     function handlePosition(pos) {
       if (!running || stopped) return;
 
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
-      console.log("GPS:", lat, lng);
+      const t   = pos.timestamp || Date.now();
+
+      console.log("GPS:", lat, lng, "t =", t);
 
       if (geoPoints.length === 0) {
-        // 第一个点
-        geoPoints.push({ lat, lng });
-        const p = geoToCanvas(lat, lng);
-        pathPoints.push(p);
-        redrawPath();
-        setStatus("GPS active.\nStart moving to draw your route.");
+        geoPoints.push({ lat, lng, t });
+        setStatus("GPS active.\nLine follows your movement.");
+        lastGpsTimestamp = t;
         return;
       }
 
@@ -367,24 +331,46 @@
       console.log("Move distance =", dist.toFixed(2), "m");
 
       if (dist < MIN_MOVE_METERS) {
-        // 移动太小，当噪音
+        // 变化太小，当噪音，只更新时间
+        lastGpsTimestamp = t;
+        setStatus(
+          "GPS active.\nWaiting for clearer movement…\n" +
+          "Last step: " + dist.toFixed(2) + " m"
+        );
         return;
       }
 
-      geoPoints.push({ lat, lng });
-      if (geoPoints.length > MAX_POINTS_STORED) geoPoints.shift();
+      geoPoints.push({ lat, lng, t });
+      if (geoPoints.length > 2000) geoPoints.shift();
 
-      const p = geoToCanvas(lat, lng);
-      pathPoints.push(p);
-      if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
+      // 更新方向：根据经纬度变化算角度
+      const dLat = lat - lastGeo.lat;
+      const dLng = lng - lastGeo.lng;
+      lastAngle = Math.atan2(dLat, dLng); // 朝向
 
-      redrawPath();
+      // 用这一步移动距离和时间估计速度（像素/秒）
+      const dtSeconds = Math.max((t - lastGpsTimestamp) / 1000, 0.1);
+      lastGpsTimestamp = t;
+
+      // 距离转像素：随便放大一点（每 1 米 → 40 像素）
+      const stepPixels = dist * 40;
+      let estimatedSpeed = stepPixels / dtSeconds;
+
+      // 限制速度范围
+      estimatedSpeed = Math.max(MIN_STEP_SPEED, Math.min(MAX_STEP_SPEED, estimatedSpeed));
+
+      // 平滑一点，避免速度跳动太明显
+      stepSpeed = stepSpeed * 0.6 + estimatedSpeed * 0.4;
+
+      console.log(
+        "Angle(deg) =", (lastAngle * 180 / Math.PI).toFixed(1),
+        "speed(px/s) =", stepSpeed.toFixed(1)
+      );
 
       setStatus(
-        "Drawing… points: " + geoPoints.length +
+        "Drawing… GPS points: " + geoPoints.length +
         "\nlast step: " + dist.toFixed(1) + " m" +
-        "\nlat: " + lat.toFixed(6) +
-        "  lng: " + lng.toFixed(6)
+        "\nspeed: " + stepSpeed.toFixed(1) + " px/s"
       );
     }
 
@@ -445,25 +431,61 @@
       }
     }
 
+    // 动画：根据 lastAngle & stepSpeed 持续向前画
+    function tick(timestamp) {
+      if (stopped) return;
+
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      const dt = (timestamp - lastFrameTime) / 1000;
+      lastFrameTime = timestamp;
+
+      if (running && lastAngle !== null && pathPoints.length > 0) {
+        const last = pathPoints[pathPoints.length - 1];
+
+        const distance = stepSpeed * dt;
+        const dx = Math.cos(lastAngle) * distance;
+        const dy = -Math.sin(lastAngle) * distance; // 上是负
+
+        const newX = last.x + dx;
+        const newY = last.y + dy;
+
+        pathPoints.push({ x: newX, y: newY });
+        if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
+
+        redrawPath();
+      }
+
+      requestAnimationFrame(tick);
+    }
+
     function onStartClick() {
-      stopped    = false;
-      running    = true;
-      geoPoints  = [];
-      pathPoints = [];
-      originLat  = null;
-      originLng  = null;
+      stopped        = false;
+      running        = true;
+      geoPoints      = [];
+      pathPoints     = [];
+      lastAngle      = null;
+      stepSpeed      = 60;
+      lastFrameTime  = null;
+      lastGpsTimestamp = null;
 
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
 
-      setStatus("Waiting for GPS… start moving to draw your route.");
+      // 起点：画布中下部
+      const startX = canvas.width / 2;
+      const startY = canvas.height - 40;
+      pathPoints.push({ x: startX, y: startY });
+      redrawPath();
+
+      setStatus("Waiting for GPS…");
       startWatch();
     }
 
     function onPauseClick(btn) {
       if (!running) {
         running = true;
+        lastFrameTime = null;
         setStatus("Resumed, drawing continues…");
         btn.textContent = "Pause";
       } else {
@@ -480,7 +502,7 @@
       running = false;
       stopped = true;
       stopWatch();
-      setStatus("Stopped. Points: " + geoPoints.length);
+      setStatus("Stopped. GPS points: " + geoPoints.length);
 
       try {
         const dataURL = canvas.toDataURL("image/png");
@@ -517,6 +539,9 @@
       endBtn.addEventListener("click", () => {
         onEndClick();
       });
+
+      // 启动动画循环
+      requestAnimationFrame(tick);
     });
   </script>
 </body>
