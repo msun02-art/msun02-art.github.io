@@ -234,17 +234,19 @@
     const ctx      = canvas.getContext("2d");
     const statusEl = document.getElementById("gps-status");
 
-    let geoPoints  = [];   // {lat, lng}
-    let pathPoints = [];   // {x, y}
+    let geoPoints  = [];     // {lat, lng}
+    let pathPoints = [];     // {x, y} 在画布上的点
     let watchId    = null;
 
     let running    = false;
     let stopped    = false;
 
-    const MAX_POINTS_STORED       = 4000;
-    const PADDING                 = 30;   // 画布内留边
-    const START_MOVE_THRESHOLD_M  = 5.0;  // 离开起点 ≥ 5m 才开始画线
-    let   startedDrawing          = false;
+    // 起点（经纬度）和缩放
+    let originLat  = null;
+    let originLng  = null;
+    const PIXELS_PER_METER = 3;     // 固定比例：1m ≈ 3px
+    const MIN_MOVE_METERS  = 1.0;   // 小于 1m 的抖动忽略
+    const MAX_POINTS_STORED = 4000;
 
     function setStatus(text) {
       statusEl.textContent = text;
@@ -255,13 +257,14 @@
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
-      recomputePathFromGeo();
+      // 重新把所有 geo 点映射到画布
+      pathPoints = geoPoints.map(g => geoToCanvas(g.lat, g.lng));
       redrawPath();
     }
 
     window.addEventListener("resize", resizeCanvas);
 
-    // 简单距离（米）
+    // 粗略算两点间距离（米）
     function distanceMeters(lat1, lng1, lat2, lng2) {
       const R = 6371000;
       const rad = Math.PI / 180;
@@ -275,66 +278,48 @@
       return R * c;
     }
 
-    // 把 geoPoints 映射到画布（自动缩放）
-    function recomputePathFromGeo() {
-      pathPoints = [];
-      if (geoPoints.length === 0 || canvas.width === 0 || canvas.height === 0) return;
-
-      // 如果还没真正开始画，只显示起点
-      if (!startedDrawing) {
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        pathPoints.push({ x: cx, y: cy });
-        return;
+    // 把实际经纬度 → 相对起点的米 → 画布坐标
+    function geoToCanvas(lat, lng) {
+      if (originLat === null || originLng === null) {
+        // 第一个点设为原点
+        originLat = lat;
+        originLng = lng;
       }
 
-      let minLat = Infinity, maxLat = -Infinity;
-      let minLng = Infinity, maxLng = -Infinity;
+      const rad = Math.PI / 180;
 
-      geoPoints.forEach(p => {
-        if (p.lat < minLat) minLat = p.lat;
-        if (p.lat > maxLat) maxLat = p.lat;
-        if (p.lng < minLng) minLng = p.lng;
-        if (p.lng > maxLng) maxLng = p.lng;
-      });
+      // 东西向：经度差 × cos(纬度) × 地球半径
+      const metersX =
+        (lng - originLng) * (Math.cos(originLat * rad) * 111320);
 
-      let dLat = maxLat - minLat;
-      let dLng = maxLng - minLng;
-      if (dLat < 1e-7) dLat = 1e-7;
-      if (dLng < 1e-7) dLng = 1e-7;
+      // 南北向：纬度差 × 地球半径
+      const metersY =
+        (lat - originLat) * 110540;
 
-      const innerWidth  = canvas.width  - 2 * PADDING;
-      const innerHeight = canvas.height - 2 * PADDING;
+      const dx = metersX * PIXELS_PER_METER;
+      const dy = metersY * PIXELS_PER_METER;
 
-      geoPoints.forEach(g => {
-        const nx = (g.lng - minLng) / dLng;
-        const ny = (g.lat - minLat) / dLat;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
 
-        const x = PADDING + nx * innerWidth;
-        const y = canvas.height - (PADDING + ny * innerHeight);
-
-        pathPoints.push({ x, y });
-      });
+      // y 轴屏幕向下，所以要 -
+      return {
+        x: cx + dx,
+        y: cy - dy,
+      };
     }
 
     function redrawPath() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (pathPoints.length === 0) return;
 
-      // 只画点、不画线的情况
-      if (pathPoints.length === 1 || !startedDrawing) {
-        const p = pathPoints[0];
-
-        ctx.fillStyle = "#F4FF75";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
-        ctx.fill();
-        return;
-      }
-
-      ctx.lineWidth = 6;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#F4FF75";
+      // 线条样式：有点“笔刷感”
+      ctx.lineWidth = 4;
+      ctx.lineJoin  = "round";
+      ctx.lineCap   = "round";
+      ctx.strokeStyle = "#283593";    // 深蓝线
+      ctx.shadowColor = "rgba(40,53,147,0.3)";
+      ctx.shadowBlur  = 2;
 
       ctx.beginPath();
       pathPoints.forEach((p, i) => {
@@ -343,16 +328,20 @@
       });
       ctx.stroke();
 
+      ctx.shadowBlur = 0;
+
+      // 起点
       const start = pathPoints[0];
       ctx.fillStyle = "#F4FF75";
       ctx.beginPath();
-      ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+      ctx.arc(start.x, start.y, 7, 0, Math.PI * 2);
       ctx.fill();
 
+      // 终点
       const last = pathPoints[pathPoints.length - 1];
-      ctx.fillStyle = "#57a368";
+      ctx.fillStyle = "#ff7043";
       ctx.beginPath();
-      ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
+      ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -365,46 +354,39 @@
       console.log("GPS:", lat, lng);
 
       if (geoPoints.length === 0) {
-        // 起点
+        // 第一个点：只作为起点，不画线（只画一个点）
         geoPoints.push({ lat, lng });
-        startedDrawing = false;
-        setStatus("GPS fixed.\nMove about 5 meters to start drawing.");
-        recomputePathFromGeo();
+        const p = geoToCanvas(lat, lng);
+        pathPoints = [p];
+        setStatus("GPS fixed.\nStart running/walking to draw your route.");
         redrawPath();
         return;
       }
 
-      // 和起点的距离
-      const start = geoPoints[0];
-      const distFromStart = distanceMeters(start.lat, start.lng, lat, lng);
+      const lastGeo = geoPoints[geoPoints.length - 1];
+      const dist    = distanceMeters(lastGeo.lat, lastGeo.lng, lat, lng);
 
-      // 更新最后一个点（保证起点位置是最新的），但不一定开始画
+      // 小于阈值就完全忽略（不加点、不画线）
+      if (dist < MIN_MOVE_METERS) {
+        setStatus(
+          "GPS active.\nMove a bit more to update the line.\n" +
+          "Last step: " + dist.toFixed(2) + " m"
+        );
+        return;
+      }
+
       geoPoints.push({ lat, lng });
       if (geoPoints.length > MAX_POINTS_STORED) geoPoints.shift();
 
-      if (!startedDrawing) {
-        setStatus(
-          "GPS active.\nMove about 5 meters to start drawing.\n" +
-          "Distance from start: " + distFromStart.toFixed(1) + " m"
-        );
+      const p = geoToCanvas(lat, lng);
+      pathPoints.push(p);
+      if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
 
-        // 只有当离起点 ≥ 阈值，才真正开始用全部点画线
-        if (distFromStart >= START_MOVE_THRESHOLD_M) {
-          startedDrawing = true;
-        } else {
-          // 还没到 5m，只显示一个点
-          recomputePathFromGeo();
-          redrawPath();
-          return;
-        }
-      }
-
-      // 已经开始画线：用所有点连起来
       setStatus(
         "Drawing… points: " + geoPoints.length +
-        "\nDistance from start: " + distFromStart.toFixed(1) + " m"
+        "\nLast step: " + dist.toFixed(1) + " m"
       );
-      recomputePathFromGeo();
+
       redrawPath();
     }
 
@@ -459,11 +441,12 @@
     }
 
     function onStartClick() {
-      stopped        = false;
-      running        = true;
-      geoPoints      = [];
-      pathPoints     = [];
-      startedDrawing = false;
+      stopped    = false;
+      running    = true;
+      geoPoints  = [];
+      pathPoints = [];
+      originLat  = null;
+      originLng  = null;
 
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
