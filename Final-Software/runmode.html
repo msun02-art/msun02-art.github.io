@@ -234,18 +234,19 @@
     const ctx      = canvas.getContext("2d");
     const statusEl = document.getElementById("gps-status");
 
-    let geoPoints  = [];   // 只用来算方向 {lat, lng}
-    let pathPoints = [];   // 画布上的点 {x, y}
+    // 真实 GPS 点（用来算路径 & 方向）
+    let geoPoints  = [];   // {lat, lng}
+    // 画布上的点（已经映射好的像素坐标）
+    let pathPoints = [];   // {x, y}
     let watchId    = null;
 
     let running    = false; // Start / Pause
     let stopped    = false; // End 之后彻底停止
 
-    let lastAngle  = null;  // 最近一次 GPS 得到的方向（弧度）
-    let lastTime   = null;  // 上一帧时间戳（ms）
-
-    const STEP_SPEED_PX_PER_SEC = 80;   // 线的“移动速度”（像素/秒）
-    const MIN_DELTA             = 1e-7; // 经纬度变化阈值，太小就当噪音
+    // 用于把经纬度映射到画布坐标
+    let originLat = null;
+    let originLng = null;
+    const SCALE   = 80000; // 数值越大，画面越“放大”
 
     function setStatus(text) {
       statusEl.textContent = text;
@@ -256,15 +257,47 @@
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
+      // 画布尺寸变化后，重新根据 geoPoints 计算 pathPoints
+      recomputePathFromGeo();
       redrawPath();
     }
 
     window.addEventListener("resize", resizeCanvas);
 
+    function geoToCanvas(lat, lng) {
+      // 第一次用当前点当原点
+      if (originLat === null || originLng === null) {
+        originLat = lat;
+        originLng = lng;
+      }
+
+      const dx = (lng - originLng) * SCALE;
+      const dy = -(lat - originLat) * SCALE; // 纬度增大 = 向北 = 画布 y 减小
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      return {
+        x: cx + dx,
+        y: cy + dy,
+      };
+    }
+
+    function recomputePathFromGeo() {
+      pathPoints = [];
+      if (geoPoints.length === 0) return;
+
+      geoPoints.forEach((g) => {
+        const p = geoToCanvas(g.lat, g.lng);
+        pathPoints.push(p);
+      });
+    }
+
     function redrawPath() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (pathPoints.length === 0) return;
 
+      // 路线
       ctx.lineWidth = 6;
       ctx.lineCap = "round";
       ctx.strokeStyle = "#F4FF75";
@@ -276,45 +309,19 @@
       });
       ctx.stroke();
 
+      // 起点
       const start = pathPoints[0];
       ctx.fillStyle = "#F4FF75";
       ctx.beginPath();
       ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
       ctx.fill();
 
+      // 终点（当前点）
       const last = pathPoints[pathPoints.length - 1];
       ctx.fillStyle = "#57a368";
       ctx.beginPath();
       ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
       ctx.fill();
-    }
-
-    // 动画循环：只要 running && !stopped && 有方向，就沿 lastAngle 画线
-    function tick(timestamp) {
-      if (stopped) return;
-
-      if (!lastTime) lastTime = timestamp;
-      const dt = (timestamp - lastTime) / 1000;
-      lastTime = timestamp;
-
-      if (running && lastAngle !== null && pathPoints.length > 0) {
-        const last = pathPoints[pathPoints.length - 1];
-
-        const distance = STEP_SPEED_PX_PER_SEC * dt;
-        const dx = Math.cos(lastAngle) * distance;
-        const dy = -Math.sin(lastAngle) * distance; // 向上是 y-
-
-        const newX = last.x + dx;
-        const newY = last.y + dy;
-
-        pathPoints.push({ x: newX, y: newY });
-
-        if (pathPoints.length > 4000) pathPoints.shift();
-
-        redrawPath();
-      }
-
-      requestAnimationFrame(tick);
     }
 
     function handlePosition(pos) {
@@ -324,36 +331,19 @@
       const lng = pos.coords.longitude;
       console.log("GPS:", lat, lng);
 
-      if (geoPoints.length === 0) {
-        // ✅ 第一次拿到 GPS → 只更新 geoPoints & 提示
-        geoPoints.push({ lat, lng });
-        setStatus(
-          "GPS active.\nMove a bit with your phone to start drawing."
-        );
-        return;
-      }
+      const point = { lat, lng };
+      geoPoints.push(point);
 
-      const lastGeo = geoPoints[geoPoints.length - 1];
-      const dLat = lat - lastGeo.lat;
-      const dLng = lng - lastGeo.lng;
-      const mag  = Math.sqrt(dLat * dLat + dLng * dLng);
+      // 根据新的 geoPoints 映射到画布
+      const canvasPoint = geoToCanvas(lat, lng);
+      pathPoints.push(canvasPoint);
 
-      console.log("delta lat/lng =", dLat, dLng, "mag =", mag);
-
-      if (mag < MIN_DELTA) {
-        console.log("变化太小，当作 GPS 噪音，不更新方向。");
-        return;
-      }
-
-      geoPoints.push({ lat, lng });
-      if (geoPoints.length > 2000) geoPoints.shift();
-
-      lastAngle = Math.atan2(dLat, dLng);
-      console.log("更新 lastAngle =", (lastAngle * 180 / Math.PI).toFixed(1), "°");
+      // 不再像之前那样“自己往前动画”，
+      // 而是每次 GPS 更新时添加一段线段，这样方向和速度都真实跟随你。
+      redrawPath();
 
       setStatus(
-        "Drawing… points: " +
-        geoPoints.length +
+        "GPS active.\nPoints: " + geoPoints.length +
         "\nlat: " + lat.toFixed(6) +
         "  lng: " + lng.toFixed(6)
       );
@@ -387,13 +377,11 @@
         return;
       }
 
-      // 温和版本的提示，只写在 console，不再给用户吓人的文案
       console.log(
         "[INFO] Running on protocol:",
         location.protocol,
         "host:",
-        location.hostname,
-        "– local HTTP on same network is allowed for geolocation on most mobile browsers."
+        location.hostname
       );
 
       if (watchId !== null) return;
@@ -423,28 +411,20 @@
       running    = true;
       geoPoints  = [];
       pathPoints = [];
-      lastAngle  = null;
-      lastTime   = null;
+      originLat  = null;
+      originLng  = null;
 
-      // ✅ 起始点：蓝框底部中央
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
 
-      const startX = canvas.width / 2;
-      const startY = canvas.height - 30;
-
-      pathPoints.push({ x: startX, y: startY });
-      redrawPath();
-
-      setStatus("Waiting for first GPS fix…");
+      setStatus("Waiting for GPS… start moving to draw your route.");
       startWatch();
     }
 
     function onPauseClick(btn) {
       if (!running) {
         running = true;
-        lastTime = null;
         setStatus("Resumed, drawing continues…");
         btn.textContent = "Pause";
       } else {
@@ -464,6 +444,7 @@
       setStatus("Stopped. Points: " + geoPoints.length);
 
       try {
+        // 把“当前画好的路线图”存成 PNG，给 pixel.html 用来生成 pixel art
         const dataURL = canvas.toDataURL("image/png");
         localStorage.setItem("funrunRouteImage", dataURL);
         console.log("路线图片已保存到 localStorage");
@@ -471,6 +452,7 @@
         console.log("保存路线图片失败:", e);
       }
 
+      // 跳转到下一页做 pixel art
       window.location.href = "pixel.html";
     }
 
@@ -498,8 +480,6 @@
       endBtn.addEventListener("click", () => {
         onEndClick();
       });
-
-      requestAnimationFrame(tick);
     });
   </script>
 </body>
