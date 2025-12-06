@@ -75,17 +75,32 @@
   border-radius: 18px;
 }
 
-/* START 按钮 */
-.start-btn {
+/* 整个按钮槽：固定在底部导航上方 */
+.run-buttons {
   position: absolute;
-  bottom: 140px;
+  bottom: 140px;          /* 和之前 START 差不多的位置，自己微调 */
   left: 50%;
   transform: translateX(-50%);
-
   width: 70%;
   max-width: 320px;
-  height: 60px;
+  height: 60px;           /* 两种状态共享同一个高度 */
+}
 
+/* 整个按钮槽：固定在底部导航上方 */
+.run-buttons {
+  position: absolute;
+  bottom: 140px;          /* 和之前 START 差不多的位置，自己微调 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 320px;
+  height: 60px;           /* 两种状态共享同一个高度 */
+}
+
+/* 初始的 START 按钮，占满整个槽 */
+.start-btn {
+  width: 100%;
+  height: 100%;
   background-color: #57a368;
   border: none;
   border-radius: 30px;
@@ -94,6 +109,40 @@
   font-family: "Carlito", sans-serif;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* Pause / End 按钮容器：一开始隐藏，和 START 位置完全重合 */
+.run-controls {
+  position: absolute;
+  inset: 0;               /* 等价于 top:0; right:0; bottom:0; left:0; */
+  display: none;          /* 点击 START 后变成 flex */
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 两个小按钮公共样式 */
+.control-btn {
+  flex: 1;
+  height: 100%;
+  border-radius: 30px;
+  border: none;
+  font-family: "Carlito", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Pause 样式 */
+.pause-btn {
+  background-color: #57a368;
+  color: #f4ff75;
+}
+
+/* End 样式 */
+.end-btn {
+  background-color: #ff9a4a;
+  color: #ffffff;
 }
 
 .bottom-nav {
