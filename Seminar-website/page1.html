@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AISense</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #290E06;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #DBCEA9;
+      font-family: "American Typewriter", serif;
+    }
+
+    /* 图片像按钮一样：鼠标悬停稍微变亮 */
+    img {
+      max-width: 20vw;
+      max-height: 20vh;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    img:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .title {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 点击图片跳转到 nextpage.html -->
+  <img src="frontpic.jpg" alt="Front Picture" onclick="window.location.href='page2.html'">
+
+  <div class="title">AISense</div>
+
+</body>
+</html>
