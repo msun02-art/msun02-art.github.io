@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>FUNRUN – Pixel Art</title>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="stylerun8.css" />
+  </head>
+  
+  <style>
+      body {
+        margin: 0;
+        font-family: "Carlito", sans-serif;
+        background: #e0e0e0;
+      }
+      .wrapper-main {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 0;
+      }
+      .iphone-pro.pixel-page {
+        background: #ffffff;
+        width: 100%;
+        max-width: 402px;
+        min-height: 874px;
+        position: relative;
+        padding: 40px 20px 120px;
+        box-sizing: border-box;
+      }
+      .pixel-title {
+        text-align: center;
+        font-size: 22px;
+        color: #57a368;
+        margin-bottom: 20px;
+      }
+      .pixel-canvas-wrap {
+        width: 100%;
+        height: 420px;
+        background: #f4ff75;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      #pixelCanvas {
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .pixel-controls {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .pixel-controls label {
+        font-size: 14px;
+        color: #344046;
+      }
+      .pixel-controls input[type="range"] {
+        width: 100%;
+      }
+      .back-link {
+        position: absolute;
+        left: 20px;
+        bottom: 30px;
+        font-size: 14px;
+        color: #57a368;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper-main">
+      <div class="iphone-pro pixel-page">
+        <h1 class="pixel-title">Your Run Pixel Art</h1>
+
+        <div class="pixel-canvas-wrap">
+          <canvas id="pixelCanvas"></canvas>
+        </div>
+
+        <div class="pixel-controls">
+          <label>
+            Pixel size:
+            <span id="pixelSizeValue">12</span> px
+            <input type="range" id="pixelSize" min="4" max="40" value="12" />
+          </label>
+        </div>
+
+        <div class="back-link" onclick="window.location.href='runmode.html'">
+          ← Back to Run Mode
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const dataURL = localStorage.getItem("funrunRouteImage");
+      const canvas  = document.getElementById("pixelCanvas");
+      const ctx     = canvas.getContext("2d");
+      const slider  = document.getElementById("pixelSize");
+      const sliderValue = document.getElementById("pixelSizeValue");
+      const img = new Image();
+
+      if (!dataURL) {
+        // 没有数据（直接进来的） -> 给个提示
+        canvas.width = 300;
+        canvas.height = 200;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#57a368";
+        ctx.font = "16px Carlito";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("No route yet. Run first!", canvas.width / 2, canvas.height / 2);
+      } else {
+        img.src = dataURL;
+        img.onload = () => {
+          drawPixelArt();
+        };
+      }
+
+      function drawPixelArt() {
+        const pixelSize = parseInt(slider.value, 10);
+        sliderValue.textContent = pixelSize;
+
+        // 根据容器大小设 canvas 尺寸
+        const wrap = canvas.parentElement;
+        const maxW = wrap.clientWidth;
+        const maxH = wrap.clientHeight;
+
+        const ratio = img.width / img.height;
+        let w = maxW;
+        let h = w / ratio;
+        if (h > maxH) {
+          h = maxH;
+          w = h * ratio;
+        }
+
+        canvas.width = w;
+        canvas.height = h;
+
+        // 先画到一个缩小版的临时 canvas
+        const smallW = Math.max(1, Math.floor(w / pixelSize));
+        const smallH = Math.max(1, Math.floor(h / pixelSize));
+
+        const off = document.createElement("canvas");
+        off.width = smallW;
+        off.height = smallH;
+        const offCtx = off.getContext("2d");
+
+        offCtx.drawImage(img, 0, 0, smallW, smallH);
+
+        // 再放大回来，关掉平滑，变成像素风
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(off, 0, 0, smallW, smallH, 0, 0, w, h);
+      }
+
+      slider.addEventListener("input", () => {
+        if (img.complete && img.src) {
+          drawPixelArt();
+        }
+      });
+    </script>
+  </body>
+</html>

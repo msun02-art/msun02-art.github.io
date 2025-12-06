@@ -1,234 +1,506 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>FUNRUN – Runmode</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
+<html lang="en">
+<head>
+  <title>FUNRUN – Runmode (Phone GPS Route)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
 
-    <link rel="stylesheet" href="globals.css" />
-    <link rel="stylesheet" href="runmode.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"/>
-  </head>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"
+  />
 
-  <body>
-    <div class="wrapper-main">
-      <div class="iphone-pro">
-        <!-- 顶部 -->
-        <header class="top-bar">
-          <div class="user-info">
-            <div class="avatar-circle"></div>
-            <span class="username">Username</span>
-          </div>
-        </header>
+  <style>
+    .wrapper-main {
+      width: 100%;
+      padding: 40px 0;
+      background-color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+    }
 
-        <div class="top-divider"></div>
+    .iphone-pro {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 402px;
+      min-height: 874px;
+      position: relative;
+      font-family: "Carlito", sans-serif;
+    }
 
-        <!-- 中间蓝色 GPS 区域 -->
-        <div class="gpsroute-area">
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 30px 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background-color: #f4ff75;
+    }
+
+    .username {
+      font-size: 18px;
+      color: #57a368;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .top-divider {
+      height: 4px;
+      width: 100%;
+      background-color: #57a368;
+    }
+
+    .gpsroute-area {
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 80px);
+      height: 480px;
+
+      background-color: #b0daff;
+      padding: 30px;
+      box-sizing: border-box;
+      border-radius: 20px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gps-status {
+      font-size: 12px;
+      color: #17426a;
+      text-align: left;
+      min-height: 32px;
+      white-space: pre-line;
+    }
+
+    .gps-canvas-wrapper {
+      flex: 1;
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    #routeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 18px;
+      background-color: #88c4ff;
+    }
+
+    .run-buttons {
+      position: absolute;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 320px;
+      height: 60px;
+    }
+
+    .start-btn {
+      width: 100%;
+      height: 100%;
+      background-color: #57a368;
+      border: none;
+      border-radius: 30px;
+      color: #f4ff75;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .run-controls {
+      position: absolute;
+      inset: 0;
+      display: none;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-btn {
+      flex: 1;
+      height: 100%;
+      border-radius: 30px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pause-btn {
+      background-color: #57a368;
+      color: #f4ff75;
+    }
+
+    .end-btn {
+      background-color: #ff9a4a;
+      color: #ffffff;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 100px;
+      width: 100%;
+      background-color: #f4ff75;
+
+      display: flex;
+      align-items: center;
+      justify-content: stretch;
+      padding: 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      font-size: 18px;
+      font-weight: 600;
+      color: #57a368;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item.active {
+      background-color: #ffffff;
+      color: #57a368;
+      box-shadow: 0 0 0 2px rgba(87, 163, 104, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper-main">
+    <div class="iphone-pro">
+      <header class="top-bar">
+        <div class="user-info">
+          <div class="avatar-circle"></div>
+          <span class="username">Username</span>
+        </div>
+      </header>
+
+      <div class="top-divider"></div>
+
+      <div class="gpsroute-area">
+        <div id="gps-status" class="gps-status">
+          Tap START to begin.
+        </div>
+        <div class="gps-canvas-wrapper">
           <canvas id="routeCanvas"></canvas>
         </div>
+      </div>
 
-   <!-- 跑步按钮区域：同一个位置里先是 START，之后变成 Pause + End -->
-<div class="run-buttons">
-  <button class="start-btn" id="start-btn">START</button>
+      <div class="run-buttons">
+        <button class="start-btn" id="start-btn">START</button>
 
-  <div class="run-controls" id="run-controls">
-    <button class="control-btn pause-btn" id="pause-btn">Pause</button>
-    <button class="control-btn end-btn" id="end-btn">End</button>
+        <div class="run-controls" id="run-controls">
+          <button class="control-btn pause-btn" id="pause-btn">Pause</button>
+          <button class="control-btn end-btn" id="end-btn">End</button>
+        </div>
+      </div>
+
+      <nav class="bottom-nav">
+        <button class="nav-item nav-home active">Home</button>
+        <button class="nav-item nav-run">Run Mode</button>
+        <button class="nav-item nav-gallery">Gallery</button>
+      </nav>
+    </div>
   </div>
-</div>
 
+  <script>
+    const canvas   = document.getElementById("routeCanvas");
+    const ctx      = canvas.getContext("2d");
+    const statusEl = document.getElementById("gps-status");
 
-        <!-- ❗ 底部导航：在 iphone-pro 里面 -->
-        <nav class="bottom-nav">
-          <button class="nav-item nav-home active">Home</button>
-          <button class="nav-item nav-run">Run Mode</button>
-          <button class="nav-item nav-gallery">Gallery</button>
-        </nav>
-      </div> <!-- /iphone-pro -->
-    </div>   <!-- /wrapper-main -->
+    let geoPoints  = [];   // 只用来算方向 {lat, lng}
+    let pathPoints = [];   // 画布上的点 {x, y}
+    let watchId    = null;
 
- 
+    let running    = false; // Start / Pause
+    let stopped    = false; // End 之后彻底停止
 
+    let lastAngle  = null;  // 最近一次 GPS 得到的方向（弧度）
+    let lastTime   = null;  // 上一帧时间戳（ms）
 
+    const STEP_SPEED_PX_PER_SEC = 80;   // 线的“移动速度”（像素/秒）
+    const MIN_DELTA             = 1e-7; // 经纬度变化阈值，太小就当噪音
 
-
-
-
-   <script>
-  const canvas = document.getElementById("routeCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let points = [];
-  let minLat, maxLat, minLng, maxLng;
-  let watchId = null;
-
-  function resizeCanvas() {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width;
-    canvas.height = rect.height;
-    redrawRoute();
-  }
-
-  window.addEventListener("resize", resizeCanvas);
-
-  function updateBounds(lat, lng) {
-    if (points.length === 0) {
-      minLat = maxLat = lat;
-      minLng = maxLng = lng;
-    } else {
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-      if (lng < minLng) minLng = lng;
-      if (lng > maxLng) maxLng = lng;
-    }
-  }
-
-  function latLngToXY(lat, lng) {
-    const padding = 30;
-    const latRange = Math.max(maxLat - minLat || 1e-9, 1e-9);
-    const lngRange = Math.max(maxLng - minLng || 1e-9, 1e-9);
-
-    const x =
-      padding +
-      ((lng - minLng) / lngRange) * (canvas.width - padding * 2);
-
-    const y =
-      padding +
-      ((maxLat - lat) / latRange) * (canvas.height - padding * 2);
-
-    return { x, y };
-  }
-
-  function redrawRoute() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (points.length === 0) return;
-
-    // 线
-    ctx.lineWidth = 6;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#F4FF75";
-
-    ctx.beginPath();
-    points.forEach((p, index) => {
-      const { x, y } = latLngToXY(p.lat, p.lng);
-      if (index === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // 起点
-    const start = latLngToXY(points[0].lat, points[0].lng);
-    ctx.fillStyle = "#F4FF75";
-    ctx.beginPath();
-    ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 当前点
-    const last = latLngToXY(points[points.length - 1].lat, points[points.length - 1].lng);
-    ctx.fillStyle = "#57a368";
-    ctx.beginPath();
-    ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function startGPSRoute() {
-    if (!("geolocation" in navigator)) {
-      alert("当前设备不支持定位 / 或浏览器禁用了 GPS");
-      return;
+    function setStatus(text) {
+      statusEl.textContent = text;
+      console.log("[STATUS]", text);
     }
 
-    if (watchId !== null) return; // 已经在跑了
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = rect.width;
+      canvas.height = rect.height;
+      redrawPath();
+    }
 
-    points = []; // 新的一次跑步，清空旧路线
+    window.addEventListener("resize", resizeCanvas);
 
-    watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+    function redrawPath() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (pathPoints.length === 0) return;
 
-        // 调试用：你可以在这里 console.log 看看是不是在变
-        console.log("GPS:", lat, lng);
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#F4FF75";
 
-        points.push({ lat, lng });
-        if (points.length > 2000) points.shift();
+      ctx.beginPath();
+      pathPoints.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
 
-        updateBounds(lat, lng);
-        redrawRoute();
-      },
-      (err) => {
-        console.log("获取 GPS 失败:", err);
-        alert("无法获取位置信息（可能是权限 / http 链接 / 浏览器设置）");
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 1000,
-        timeout: 10000,
+      const start = pathPoints[0];
+      ctx.fillStyle = "#F4FF75";
+      ctx.beginPath();
+      ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      const last = pathPoints[pathPoints.length - 1];
+      ctx.fillStyle = "#57a368";
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 动画循环：只要 running && !stopped && 有方向，就沿 lastAngle 画线
+    function tick(timestamp) {
+      if (stopped) return;
+
+      if (!lastTime) lastTime = timestamp;
+      const dt = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      if (running && lastAngle !== null && pathPoints.length > 0) {
+        const last = pathPoints[pathPoints.length - 1];
+
+        const distance = STEP_SPEED_PX_PER_SEC * dt;
+        const dx = Math.cos(lastAngle) * distance;
+        const dy = -Math.sin(lastAngle) * distance; // 向上是 y-
+
+        const newX = last.x + dx;
+        const newY = last.y + dy;
+
+        pathPoints.push({ x: newX, y: newY });
+
+        if (pathPoints.length > 4000) pathPoints.shift();
+
+        redrawPath();
       }
-    );
-  }
 
-  function stopGPSRoute() {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
+      requestAnimationFrame(tick);
     }
-  }
 
-  // 把当前 canvas 变成 PNG 字符串，放进 localStorage
-  function saveRouteImage() {
-    if (!canvas || points.length === 0) return;
-    try {
-      const dataURL = canvas.toDataURL("image/png");
-      localStorage.setItem("funrunRouteImage", dataURL);
-    } catch (e) {
-      console.log("保存路线图片失败:", e);
+    function handlePosition(pos) {
+      if (!running || stopped) return;
+
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("GPS:", lat, lng);
+
+      if (geoPoints.length === 0) {
+        // ✅ 第一次拿到 GPS → 只更新 geoPoints & 提示
+        geoPoints.push({ lat, lng });
+        setStatus(
+          "GPS active.\nMove a bit with your phone to start drawing."
+        );
+        return;
+      }
+
+      const lastGeo = geoPoints[geoPoints.length - 1];
+      const dLat = lat - lastGeo.lat;
+      const dLng = lng - lastGeo.lng;
+      const mag  = Math.sqrt(dLat * dLat + dLng * dLng);
+
+      console.log("delta lat/lng =", dLat, dLng, "mag =", mag);
+
+      if (mag < MIN_DELTA) {
+        console.log("变化太小，当作 GPS 噪音，不更新方向。");
+        return;
+      }
+
+      geoPoints.push({ lat, lng });
+      if (geoPoints.length > 2000) geoPoints.shift();
+
+      lastAngle = Math.atan2(dLat, dLng);
+      console.log("更新 lastAngle =", (lastAngle * 180 / Math.PI).toFixed(1), "°");
+
+      setStatus(
+        "Drawing… points: " +
+        geoPoints.length +
+        "\nlat: " + lat.toFixed(6) +
+        "  lng: " + lng.toFixed(6)
+      );
     }
-  }
 
-  window.addEventListener("load", () => {
-    resizeCanvas();
+    function handlePositionError(err) {
+      console.log("获取 GPS 失败:", err.code, err.message, err);
 
-    const startBtn   = document.getElementById("start-btn");
-    const controls   = document.getElementById("run-controls");
-    const pauseBtn   = document.getElementById("pause-btn");
-    const endBtn     = document.getElementById("end-btn");
-
-    // 初始：只显示 START
-    controls.style.display = "none";
-    startBtn.style.display = "block";
-
-    // 点击 START：开始 GPS、隐藏 START、显示 Pause/End
-    startBtn.addEventListener("click", () => {
-      startGPSRoute();
-      startBtn.style.display = "none";
-      controls.style.display = "flex";
-    });
-
-    // Pause / Resume
-    pauseBtn.addEventListener("click", () => {
-      if (watchId !== null) {
-        // 现在在跑 -> 暂停
-        stopGPSRoute();
-        pauseBtn.textContent = "Resume";
+      let msg = "";
+      if (err.code === 1) {
+        msg =
+          "浏览器阻止了定位权限。\n检查：Safari / 浏览器的站点设置 → 允许位置。";
+      } else if (err.code === 2) {
+        msg =
+          "设备当前无法获取位置信息（Position unavailable）。\n可能在室内、或系统定位被关。";
+      } else if (err.code === 3) {
+        msg =
+          "获取位置信息超时（Timeout）。\n可以尝试等待更久或到室外。";
       } else {
-        // 现在是暂停 -> 继续
-        startGPSRoute();
-        pauseBtn.textContent = "Pause";
+        msg = "未知错误：" + err.message;
       }
-    });
 
-    // End：确认 -> 停止 -> 保存图片 -> 去 pixel.html
-    endBtn.addEventListener("click", () => {
+      alert("无法获取位置信息：\n" + msg);
+      setStatus("GPS error: " + msg);
+    }
+
+    function startWatch() {
+      if (!("geolocation" in navigator)) {
+        alert("当前设备不支持定位 / 浏览器禁用了 geolocation");
+        setStatus("Geolocation API not available.");
+        return;
+      }
+
+      // 温和版本的提示，只写在 console，不再给用户吓人的文案
+      console.log(
+        "[INFO] Running on protocol:",
+        location.protocol,
+        "host:",
+        location.hostname,
+        "– local HTTP on same network is allowed for geolocation on most mobile browsers."
+      );
+
+      if (watchId !== null) return;
+
+      watchId = navigator.geolocation.watchPosition(
+        handlePosition,
+        handlePositionError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 30000,
+        }
+      );
+      console.log("start watchPosition, id =", watchId);
+    }
+
+    function stopWatch() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        console.log("clearWatch", watchId);
+        watchId = null;
+      }
+    }
+
+    function onStartClick() {
+      stopped    = false;
+      running    = true;
+      geoPoints  = [];
+      pathPoints = [];
+      lastAngle  = null;
+      lastTime   = null;
+
+      // ✅ 起始点：蓝框底部中央
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = rect.width;
+      canvas.height = rect.height;
+
+      const startX = canvas.width / 2;
+      const startY = canvas.height - 30;
+
+      pathPoints.push({ x: startX, y: startY });
+      redrawPath();
+
+      setStatus("Waiting for first GPS fix…");
+      startWatch();
+    }
+
+    function onPauseClick(btn) {
+      if (!running) {
+        running = true;
+        lastTime = null;
+        setStatus("Resumed, drawing continues…");
+        btn.textContent = "Pause";
+      } else {
+        running = false;
+        setStatus("Paused.");
+        btn.textContent = "Resume";
+      }
+    }
+
+    function onEndClick() {
       const ok = confirm("Finish this run?");
       if (!ok) return;
 
-      stopGPSRoute();
-      saveRouteImage();
+      running = false;
+      stopped = true;
+      stopWatch();
+      setStatus("Stopped. Points: " + geoPoints.length);
+
+      try {
+        const dataURL = canvas.toDataURL("image/png");
+        localStorage.setItem("funrunRouteImage", dataURL);
+        console.log("路线图片已保存到 localStorage");
+      } catch (e) {
+        console.log("保存路线图片失败:", e);
+      }
+
       window.location.href = "pixel.html";
+    }
+
+    window.addEventListener("load", () => {
+      resizeCanvas();
+
+      const startBtn = document.getElementById("start-btn");
+      const controls = document.getElementById("run-controls");
+      const pauseBtn = document.getElementById("pause-btn");
+      const endBtn   = document.getElementById("end-btn");
+
+      controls.style.display = "none";
+      startBtn.style.display = "block";
+
+      startBtn.addEventListener("click", () => {
+        onStartClick();
+        startBtn.style.display = "none";
+        controls.style.display = "flex";
+      });
+
+      pauseBtn.addEventListener("click", () => {
+        onPauseClick(pauseBtn);
+      });
+
+      endBtn.addEventListener("click", () => {
+        onEndClick();
+      });
+
+      requestAnimationFrame(tick);
     });
-  });
-</script>
-  </body>
+  </script>
+</body>
 </html>
