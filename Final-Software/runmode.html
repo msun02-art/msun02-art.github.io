@@ -235,22 +235,21 @@
     const statusEl = document.getElementById("gps-status");
 
     let pathPoints = [];   // {x, y}
-    let geoPoints  = [];   // 仅用来统计/显示
+    let geoPoints  = [];   // 只是记录 & 显示
     let watchId    = null;
 
     let running    = false;
     let stopped    = false;
 
     // 线条动画相关
-    let lastAngle        = null;   // 当前前进方向（弧度）
-    let stepSpeed        = 60;     // 像素/秒（会根据 GPS 调整）
-    let lastFrameTime    = null;   // 上一帧时间戳
-    let lastGpsTimestamp = null;   // 上一次 GPS 时间（用于估计速度）
+    let lastAngle        = -Math.PI / 2; // 默认一开始向上
+    let stepSpeed        = 80;           // 像素/秒
+    let lastFrameTime    = null;
+    let lastGpsTimestamp = null;
 
-    const MIN_MOVE_METERS   = 0.5;  // 小于这个当抖动
-    const MIN_STEP_SPEED    = 20;   // 像素/秒下限
-    const MAX_STEP_SPEED    = 200;  // 上限
+    const MIN_MOVE_METERS   = 0.5;   // 认为“真的动起来”的阈值
     const MAX_POINTS_STORED = 4000;
+    const PIXELS_PER_METER  = 40;    // 1 米 ≈ 40 像素，用来估算速度
 
     function setStatus(text) {
       statusEl.textContent = text;
@@ -294,7 +293,6 @@
       ctx.fill();
     }
 
-    // 简单距离估算（米）
     function distanceMeters(lat1, lng1, lat2, lng2) {
       const R = 6371000;
       const rad = Math.PI / 180;
@@ -308,7 +306,7 @@
       return R * c;
     }
 
-    // GPS 回调：只负责更新方向 & 估算速度
+    // GPS 回调：更新方向 & 速度，但不再阻止动画
     function handlePosition(pos) {
       if (!running || stopped) return;
 
@@ -320,58 +318,54 @@
 
       if (geoPoints.length === 0) {
         geoPoints.push({ lat, lng, t });
-        setStatus("GPS active.\nLine follows your movement.");
         lastGpsTimestamp = t;
+        setStatus("GPS active.\nLine is following your movement.");
         return;
       }
 
       const lastGeo = geoPoints[geoPoints.length - 1];
       const dist = distanceMeters(lastGeo.lat, lastGeo.lng, lat, lng);
 
-      console.log("Move distance =", dist.toFixed(2), "m");
-
-      if (dist < MIN_MOVE_METERS) {
-        // 变化太小，当噪音，只更新时间
-        lastGpsTimestamp = t;
-        setStatus(
-          "GPS active.\nWaiting for clearer movement…\n" +
-          "Last step: " + dist.toFixed(2) + " m"
-        );
-        return;
-      }
-
       geoPoints.push({ lat, lng, t });
       if (geoPoints.length > 2000) geoPoints.shift();
 
-      // 更新方向：根据经纬度变化算角度
-      const dLat = lat - lastGeo.lat;
-      const dLng = lng - lastGeo.lng;
-      lastAngle = Math.atan2(dLat, dLng); // 朝向
+      // 只有在“明显移动”时才更新方向和速度，
+      // 但就算没到这个距离，动画也继续用旧的方向。
+      if (dist >= MIN_MOVE_METERS) {
+        const dLat = lat - lastGeo.lat;
+        const dLng = lng - lastGeo.lng;
+        lastAngle  = Math.atan2(dLat, dLng);
 
-      // 用这一步移动距离和时间估计速度（像素/秒）
-      const dtSeconds = Math.max((t - lastGpsTimestamp) / 1000, 0.1);
-      lastGpsTimestamp = t;
+        const dtSeconds = Math.max((t - (lastGpsTimestamp || t)) / 1000, 0.1);
+        lastGpsTimestamp = t;
 
-      // 距离转像素：随便放大一点（每 1 米 → 40 像素）
-      const stepPixels = dist * 40;
-      let estimatedSpeed = stepPixels / dtSeconds;
+        let stepPixels = dist * PIXELS_PER_METER;
+        let estimatedSpeed = stepPixels / dtSeconds;
 
-      // 限制速度范围
-      estimatedSpeed = Math.max(MIN_STEP_SPEED, Math.min(MAX_STEP_SPEED, estimatedSpeed));
+        const MIN_STEP_SPEED = 40;
+        const MAX_STEP_SPEED = 200;
+        estimatedSpeed = Math.max(MIN_STEP_SPEED, Math.min(MAX_STEP_SPEED, estimatedSpeed));
 
-      // 平滑一点，避免速度跳动太明显
-      stepSpeed = stepSpeed * 0.6 + estimatedSpeed * 0.4;
+        // 平滑
+        stepSpeed = stepSpeed * 0.6 + estimatedSpeed * 0.4;
 
-      console.log(
-        "Angle(deg) =", (lastAngle * 180 / Math.PI).toFixed(1),
-        "speed(px/s) =", stepSpeed.toFixed(1)
-      );
+        console.log(
+          "Update angle =", (lastAngle * 180 / Math.PI).toFixed(1),
+          "speed(px/s) =", stepSpeed.toFixed(1),
+          "dist =", dist.toFixed(2)
+        );
 
-      setStatus(
-        "Drawing… GPS points: " + geoPoints.length +
-        "\nlast step: " + dist.toFixed(1) + " m" +
-        "\nspeed: " + stepSpeed.toFixed(1) + " px/s"
-      );
+        setStatus(
+          "Drawing…\nLast step: " + dist.toFixed(1) + " m" +
+          "\nSpeed: " + stepSpeed.toFixed(1) + " px/s"
+        );
+      } else {
+        // 没有明显移动，也更新一下状态但不 return
+        setStatus(
+          "GPS active.\nWaiting for clearer movement...\n" +
+          "Last step: " + dist.toFixed(2) + " m"
+        );
+      }
     }
 
     function handlePositionError(err) {
@@ -402,13 +396,6 @@
         return;
       }
 
-      console.log(
-        "[INFO] Running on protocol:",
-        location.protocol,
-        "host:",
-        location.hostname
-      );
-
       if (watchId !== null) return;
 
       watchId = navigator.geolocation.watchPosition(
@@ -431,7 +418,7 @@
       }
     }
 
-    // 动画：根据 lastAngle & stepSpeed 持续向前画
+    // 动画：永远按照 lastAngle & stepSpeed 往前画
     function tick(timestamp) {
       if (stopped) return;
 
@@ -439,12 +426,12 @@
       const dt = (timestamp - lastFrameTime) / 1000;
       lastFrameTime = timestamp;
 
-      if (running && lastAngle !== null && pathPoints.length > 0) {
+      if (running && pathPoints.length > 0) {
         const last = pathPoints[pathPoints.length - 1];
 
         const distance = stepSpeed * dt;
         const dx = Math.cos(lastAngle) * distance;
-        const dy = -Math.sin(lastAngle) * distance; // 上是负
+        const dy = -Math.sin(lastAngle) * distance;
 
         const newX = last.x + dx;
         const newY = last.y + dy;
@@ -463,16 +450,15 @@
       running        = true;
       geoPoints      = [];
       pathPoints     = [];
-      lastAngle      = null;
-      stepSpeed      = 60;
       lastFrameTime  = null;
       lastGpsTimestamp = null;
+      lastAngle      = -Math.PI / 2; // 默认向上
 
       const rect = canvas.getBoundingClientRect();
       canvas.width  = rect.width;
       canvas.height = rect.height;
 
-      // 起点：画布中下部
+      // 起点：底部中间
       const startX = canvas.width / 2;
       const startY = canvas.height - 40;
       pathPoints.push({ x: startX, y: startY });
@@ -540,7 +526,6 @@
         onEndClick();
       });
 
-      // 启动动画循环
       requestAnimationFrame(tick);
     });
   </script>
