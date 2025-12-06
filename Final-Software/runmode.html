@@ -230,296 +230,294 @@
   </div>
 
   <script>
-  const canvas   = document.getElementById("routeCanvas");
-  const ctx      = canvas.getContext("2d");
-  const statusEl = document.getElementById("gps-status");
+    const canvas   = document.getElementById("routeCanvas");
+    const ctx      = canvas.getContext("2d");
+    const statusEl = document.getElementById("gps-status");
 
-  let geoPoints  = [];   // {lat, lng}
-  let pathPoints = [];   // {x, y}
-  let watchId    = null;
+    let geoPoints  = [];   // {lat, lng}
+    let pathPoints = [];   // {x, y}
+    let watchId    = null;
 
-  let running    = false;
-  let stopped    = false;
+    let running    = false;
+    let stopped    = false;
 
-  // 映射经纬度 → 画布坐标
-  let originLat = null;
-  let originLng = null;
+    // 映射经纬度 → 画布
+    let originLat = null;
+    let originLng = null;
 
-  const PIXELS_PER_METER   = 0.7;  // 每 1 米在画布上多少像素（可以调大小）
-  const MIN_MOVE_METERS    = 1.0;  // 小于这个距离不画（过滤抖动）
-  const MAX_POINTS_STORED  = 4000; // 最多保存多少点，防止无限增长
+    // 调整这两个：灵敏度 & 缩放
+    const PIXELS_PER_METER   = 3.0;   // 每 1 米 ≈ 3 像素
+    const MIN_MOVE_METERS    = 0.25;  // 移动 ≥ 25cm 才画，过滤抖动
+    const MAX_POINTS_STORED  = 4000;
 
-  function setStatus(text) {
-    statusEl.textContent = text;
-    console.log("[STATUS]", text);
-  }
-
-  function resizeCanvas() {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width;
-    canvas.height = rect.height;
-    // 画布尺寸变化后，根据 geoPoints 重新计算 pathPoints
-    recomputePathFromGeo();
-    redrawPath();
-  }
-
-  window.addEventListener("resize", resizeCanvas);
-
-  // 计算两点之间的距离（米）——粗略够用
-  function distanceMeters(lat1, lng1, lat2, lng2) {
-    const R = 6371000; // 地球半径（米）
-    const rad = Math.PI / 180;
-    const dLat = (lat2 - lat1) * rad;
-    const dLng = (lng2 - lng1) * rad;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-      Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  // 经纬度 → 画布坐标
-  function geoToCanvas(lat, lng) {
-    if (originLat === null || originLng === null) {
-      originLat = lat;
-      originLng = lng;
+    function setStatus(text) {
+      statusEl.textContent = text;
+      console.log("[STATUS]", text);
     }
 
-    // 按“米”来算相对位移
-    const metersX = distanceMeters(originLat, originLng, originLat, lng); // 经度方向
-    const metersY = distanceMeters(originLat, originLng, lat, originLng); // 纬度方向
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = rect.width;
+      canvas.height = rect.height;
+      recomputePathFromGeo();
+      redrawPath();
+    }
 
-    // 判断方向（左/右，上/下）
-    const signX = (lng >= originLng) ? 1 : -1;
-    const signY = (lat >= originLat) ? -1 : 1; // 画布 y 向下，纬度增大是向北
+    window.addEventListener("resize", resizeCanvas);
 
-    const dx = signX * metersX * PIXELS_PER_METER;
-    const dy = signY * metersY * PIXELS_PER_METER;
+    // 粗略算两点间距离（米）
+    function distanceMeters(lat1, lng1, lat2, lng2) {
+      const R = 6371000; // 地球半径（米）
+      const rad = Math.PI / 180;
+      const dLat = (lat2 - lat1) * rad;
+      const dLng = (lng2 - lng1) * rad;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+    // 经纬度 → 画布中心为原点的坐标
+    function geoToCanvas(lat, lng) {
+      if (originLat === null || originLng === null) {
+        originLat = lat;
+        originLng = lng;
+      }
 
-    return {
-      x: cx + dx,
-      y: cy + dy,
-    };
-  }
+      const metersX = distanceMeters(originLat, originLng, originLat, lng);
+      const metersY = distanceMeters(originLat, originLng, lat, originLng);
 
-  function recomputePathFromGeo() {
-    pathPoints = [];
-    if (geoPoints.length === 0) return;
+      const signX = (lng >= originLng) ? 1 : -1;
+      const signY = (lat >= originLat) ? -1 : 1; // 纬度越大偏北，画布 y 向上
 
-    geoPoints.forEach((g) => {
-      const p = geoToCanvas(g.lat, g.lng);
-      pathPoints.push(p);
-    });
-  }
+      const dx = signX * metersX * PIXELS_PER_METER;
+      const dy = signY * metersY * PIXELS_PER_METER;
 
-  function redrawPath() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (pathPoints.length === 0) return;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
 
-    ctx.lineWidth = 6;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#F4FF75";
+      return {
+        x: cx + dx,
+        y: cy + dy,
+      };
+    }
 
-    ctx.beginPath();
-    pathPoints.forEach((p, i) => {
-      if (i === 0) ctx.moveTo(p.x, p.y);
-      else ctx.lineTo(p.x, p.y);
-    });
-    ctx.stroke();
+    function recomputePathFromGeo() {
+      pathPoints = [];
+      if (geoPoints.length === 0) return;
 
-    // 起点
-    const start = pathPoints[0];
-    ctx.fillStyle = "#F4FF75";
-    ctx.beginPath();
-    ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
-    ctx.fill();
+      geoPoints.forEach((g) => {
+        const p = geoToCanvas(g.lat, g.lng);
+        pathPoints.push(p);
+      });
+    }
 
-    // 终点
-    const last = pathPoints[pathPoints.length - 1];
-    ctx.fillStyle = "#57a368";
-    ctx.beginPath();
-    ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
-    ctx.fill();
-  }
+    function redrawPath() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (pathPoints.length === 0) return;
 
-  function handlePosition(pos) {
-    if (!running || stopped) return;
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#F4FF75";
 
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    console.log("GPS:", lat, lng);
+      ctx.beginPath();
+      pathPoints.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
 
-    if (geoPoints.length === 0) {
-      // 第一个点，只作为起点
+      // 起点
+      const start = pathPoints[0];
+      ctx.fillStyle = "#F4FF75";
+      ctx.beginPath();
+      ctx.arc(start.x, start.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 终点
+      const last = pathPoints[pathPoints.length - 1];
+      ctx.fillStyle = "#57a368";
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function handlePosition(pos) {
+      if (!running || stopped) return;
+
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("GPS:", lat, lng);
+
+      if (geoPoints.length === 0) {
+        // 第一个点
+        geoPoints.push({ lat, lng });
+        const p = geoToCanvas(lat, lng);
+        pathPoints.push(p);
+        redrawPath();
+        setStatus("GPS active.\nStart moving to draw your route.");
+        return;
+      }
+
+      const lastGeo = geoPoints[geoPoints.length - 1];
+      const dist = distanceMeters(lastGeo.lat, lastGeo.lng, lat, lng);
+
+      console.log("Move distance =", dist.toFixed(2), "m");
+
+      if (dist < MIN_MOVE_METERS) {
+        // 移动太小，当噪音
+        return;
+      }
+
       geoPoints.push({ lat, lng });
+      if (geoPoints.length > MAX_POINTS_STORED) geoPoints.shift();
+
       const p = geoToCanvas(lat, lng);
       pathPoints.push(p);
+      if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
+
       redrawPath();
-      setStatus("GPS active.\nStart moving to draw your route.");
-      return;
+
+      setStatus(
+        "Drawing… points: " + geoPoints.length +
+        "\nlast step: " + dist.toFixed(1) + " m" +
+        "\nlat: " + lat.toFixed(6) +
+        "  lng: " + lng.toFixed(6)
+      );
     }
 
-    const lastGeo = geoPoints[geoPoints.length - 1];
-    const dist = distanceMeters(lastGeo.lat, lastGeo.lng, lat, lng);
+    function handlePositionError(err) {
+      console.log("获取 GPS 失败:", err.code, err.message, err);
 
-    console.log("Move distance =", dist.toFixed(2), "m");
-
-    // 移动太少（GPS 抖动）就不画
-    if (dist < MIN_MOVE_METERS) {
-      return;
-    }
-
-    geoPoints.push({ lat, lng });
-    if (geoPoints.length > MAX_POINTS_STORED) geoPoints.shift();
-
-    const p = geoToCanvas(lat, lng);
-    pathPoints.push(p);
-    if (pathPoints.length > MAX_POINTS_STORED) pathPoints.shift();
-
-    redrawPath();
-
-    setStatus(
-      "Drawing… points: " + geoPoints.length +
-      "\nlast step: " + dist.toFixed(1) + " m" +
-      "\nlat: " + lat.toFixed(6) +
-      "  lng: " + lng.toFixed(6)
-    );
-  }
-
-  function handlePositionError(err) {
-    console.log("获取 GPS 失败:", err.code, err.message, err);
-
-    let msg = "";
-    if (err.code === 1) {
-      msg =
-        "浏览器阻止了定位权限。\n检查：Safari / 浏览器的站点设置 → 允许位置。";
-    } else if (err.code === 2) {
-      msg =
-        "设备当前无法获取位置信息（Position unavailable）。\n可能在室内、或系统定位被关。";
-    } else if (err.code === 3) {
-      msg =
-        "获取位置信息超时（Timeout）。\n可以尝试等待更久或到室外。";
-    } else {
-      msg = "未知错误：" + err.message;
-    }
-
-    alert("无法获取位置信息：\n" + msg);
-    setStatus("GPS error: " + msg);
-  }
-
-  function startWatch() {
-    if (!("geolocation" in navigator)) {
-      alert("当前设备不支持定位 / 浏览器禁用了 geolocation");
-      setStatus("Geolocation API not available.");
-      return;
-    }
-
-    console.log(
-      "[INFO] Running on protocol:",
-      location.protocol,
-      "host:",
-      location.hostname
-    );
-
-    if (watchId !== null) return;
-
-    watchId = navigator.geolocation.watchPosition(
-      handlePosition,
-      handlePositionError,
-      {
-        enableHighAccuracy: true,
-        maximumAge: 1000,
-        timeout: 30000,
+      let msg = "";
+      if (err.code === 1) {
+        msg =
+          "浏览器阻止了定位权限。\n检查：Safari / 浏览器的站点设置 → 允许位置。";
+      } else if (err.code === 2) {
+        msg =
+          "设备当前无法获取位置信息（Position unavailable）。\n可能在室内、或系统定位被关。";
+      } else if (err.code === 3) {
+        msg =
+          "获取位置信息超时（Timeout）。\n可以尝试等待更久或到室外。";
+      } else {
+        msg = "未知错误：" + err.message;
       }
-    );
-    console.log("start watchPosition, id =", watchId);
-  }
 
-  function stopWatch() {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      console.log("clearWatch", watchId);
-      watchId = null;
+      alert("无法获取位置信息：\n" + msg);
+      setStatus("GPS error: " + msg);
     }
-  }
 
-  function onStartClick() {
-    stopped    = false;
-    running    = true;
-    geoPoints  = [];
-    pathPoints = [];
-    originLat  = null;
-    originLng  = null;
+    function startWatch() {
+      if (!("geolocation" in navigator)) {
+        alert("当前设备不支持定位 / 浏览器禁用了 geolocation");
+        setStatus("Geolocation API not available.");
+        return;
+      }
 
-    const rect = canvas.getBoundingClientRect();
-    canvas.width  = rect.width;
-    canvas.height = rect.height;
+      console.log(
+        "[INFO] Running on protocol:",
+        location.protocol,
+        "host:",
+        location.hostname
+      );
 
-    setStatus("Waiting for GPS… start moving to draw your route.");
-    startWatch();
-  }
+      if (watchId !== null) return;
 
-  function onPauseClick(btn) {
-    if (!running) {
-      running = true;
-      setStatus("Resumed, drawing continues…");
-      btn.textContent = "Pause";
-    } else {
+      watchId = navigator.geolocation.watchPosition(
+        handlePosition,
+        handlePositionError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 30000,
+        }
+      );
+      console.log("start watchPosition, id =", watchId);
+    }
+
+    function stopWatch() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        console.log("clearWatch", watchId);
+        watchId = null;
+      }
+    }
+
+    function onStartClick() {
+      stopped    = false;
+      running    = true;
+      geoPoints  = [];
+      pathPoints = [];
+      originLat  = null;
+      originLng  = null;
+
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = rect.width;
+      canvas.height = rect.height;
+
+      setStatus("Waiting for GPS… start moving to draw your route.");
+      startWatch();
+    }
+
+    function onPauseClick(btn) {
+      if (!running) {
+        running = true;
+        setStatus("Resumed, drawing continues…");
+        btn.textContent = "Pause";
+      } else {
+        running = false;
+        setStatus("Paused.");
+        btn.textContent = "Resume";
+      }
+    }
+
+    function onEndClick() {
+      const ok = confirm("Finish this run?");
+      if (!ok) return;
+
       running = false;
-      setStatus("Paused.");
-      btn.textContent = "Resume";
-    }
-  }
+      stopped = true;
+      stopWatch();
+      setStatus("Stopped. Points: " + geoPoints.length);
 
-  function onEndClick() {
-    const ok = confirm("Finish this run?");
-    if (!ok) return;
+      try {
+        const dataURL = canvas.toDataURL("image/png");
+        localStorage.setItem("funrunRouteImage", dataURL);
+        console.log("路线图片已保存到 localStorage");
+      } catch (e) {
+        console.log("保存路线图片失败:", e);
+      }
 
-    running = false;
-    stopped = true;
-    stopWatch();
-    setStatus("Stopped. Points: " + geoPoints.length);
-
-    try {
-      const dataURL = canvas.toDataURL("image/png");
-      localStorage.setItem("funrunRouteImage", dataURL);
-      console.log("路线图片已保存到 localStorage");
-    } catch (e) {
-      console.log("保存路线图片失败:", e);
+      window.location.href = "pixel.html";
     }
 
-    window.location.href = "pixel.html";
-  }
+    window.addEventListener("load", () => {
+      resizeCanvas();
 
-  window.addEventListener("load", () => {
-    resizeCanvas();
+      const startBtn = document.getElementById("start-btn");
+      const controls = document.getElementById("run-controls");
+      const pauseBtn = document.getElementById("pause-btn");
+      const endBtn   = document.getElementById("end-btn");
 
-    const startBtn = document.getElementById("start-btn");
-    const controls = document.getElementById("run-controls");
-    const pauseBtn = document.getElementById("pause-btn");
-    const endBtn   = document.getElementById("end-btn");
+      controls.style.display = "none";
+      startBtn.style.display = "block";
 
-    controls.style.display = "none";
-    startBtn.style.display = "block";
+      startBtn.addEventListener("click", () => {
+        onStartClick();
+        startBtn.style.display = "none";
+        controls.style.display = "flex";
+      });
 
-    startBtn.addEventListener("click", () => {
-      onStartClick();
-      startBtn.style.display = "none";
-      controls.style.display = "flex";
+      pauseBtn.addEventListener("click", () => {
+        onPauseClick(pauseBtn);
+      });
+
+      endBtn.addEventListener("click", () => {
+        onEndClick();
+      });
     });
-
-    pauseBtn.addEventListener("click", () => {
-      onPauseClick(pauseBtn);
-    });
-
-    endBtn.addEventListener("click", () => {
-      onEndClick();
-    });
-  });
-</script>
+  </script>
 </body>
 </html>
