@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AISense</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: "American Typewriter", serif;
+      background-color: #290E06;
+      color: #DBCEA9;
+    }
+
+    body {
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      min-height: 100vh;
+      background-color: #290E06;
+    }
+
+    .section {
+      width: 100%;
+      padding: 120px 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .section-inner {
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      letter-spacing: 2px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* ====== Hero ====== */
+    .hero {
+      min-height: 100vh;
+      padding: 40px 24px 80px;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      background-color: #290E06;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url("frontpic2.jpg");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.32;
+      pointer-events: none;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(41,14,6,0) 0%, #290E06 65%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 56px;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .hero-left {
+      padding-right: 12px;
+    }
+
+    .hero-title {
+      font-size: 88px;
+      letter-spacing: 26px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+
+    .hero-credit {
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 32px;
+    }
+
+    .hero-lead {
+      font-size: 15px;
+      max-width: 460px;
+      opacity: 0.9;
+    }
+
+    .hero-tagline {
+      margin-top: 20px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .hero-right {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .hero-card {
+      width: 100%;
+      max-width: 380px;
+      border-radius: 24px;
+      border: 1px solid rgba(219,206,169,0.35);
+      background: rgba(20,6,3,0.9);
+      padding: 18px 18px 20px;
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-card-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+
+    .hero-card-text {
+      font-size: 12px;
+      opacity: 0.92;
+      margin-bottom: 12px;
+    }
+
+    .hero-card-caption {
+      font-size: 11px;
+      opacity: 0.65;
+    }
+
+    .hero-thumb {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .hero-thumb img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ====== About section ====== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 40px;
+    }
+
+    .about-text p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
+
+    .about-note {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    .about-block {
+      border-radius: 18px;
+      border: 1px solid rgba(219,206,169,0.22);
+      padding: 20px 22px;
+      background-color: #140603;
+      font-size: 13px;
+      line-height: 1.7;
+      opacity: 0.94;
+    }
+
+    .about-block ul {
+      margin: 10px 0 10px 18px;
+    }
+
+    .about-block li {
+      margin: 4px 0;
+    }
+
+    /* ====== Video + Poem ====== */
+    .video-poem-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 40px;
+      align-items: center;
+    }
+
+    .video-frame {
+      border-radius: 20px;
+      overflow: hidden;
+      border: none;
+      background-color: transparent;
+    }
+
+    .video-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+    }
+
+    .video-caption {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    .poem-box {
+      border-radius: 20px;
+      border: 1px solid rgba(219,206,169,0.25);
+      background-color: #140603;
+      padding: 24px 24px 26px;
+      font-size: 14px;
+      line-height: 1.9;
+      white-space: pre-line;
+    }
+
+    /* ====== Conversation (script) ====== */
+    .conv-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .conv-intro {
+      font-size: 13px;
+      max-width: 520px;
+      opacity: 0.85;
+    }
+
+    .pill-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.7;
+    }
+
+    .toggle-link {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: lowercase;
+      text-decoration: underline;
+      cursor: pointer;
+      opacity: 0.85;
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      margin-top: 6px;
+    }
+
+    .script-shell {
+      margin-top: 24px;
+      border-radius: 22px;
+      border: 1px solid rgba(219,206,169,0.25);
+      background-color: #140603;
+      padding: 22px 22px 24px;
+      display: none;
+    }
+
+    .script-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      font-size: 12px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .script-col h4 {
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin: 10px 0 4px;
+      text-transform: uppercase;
+    }
+
+    .script-col p {
+      margin-bottom: 6px;
+    }
+
+    .script-col ul {
+      margin: 4px 0 8px 18px;
+    }
+
+    .script-col li {
+      margin: 2px 0;
+    }
+
+    .speaker {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .me {
+      color: #C3A784;
+    }
+
+    .ai {
+      color: #DBCEA9;
+    }
+
+    .divider {
+      margin: 8px 0;
+      opacity: 0.7;
+    }
+
+    /* ====== Living with AISense – big visual change ====== */
+    .living-section {
+      background: radial-gradient(circle at top, #1b0803 0%, #140603 40%, #090302 100%);
+      padding-top: 120px;
+      padding-bottom: 160px;
+    }
+
+    .living-section .section-title {
+      margin-bottom: 16px;
+    }
+
+    .living-intro {
+      font-size: 13px;
+      max-width: 520px;
+      opacity: 0.85;
+      margin-bottom: 70px;
+    }
+
+    .story-sequence {
+      display: flex;
+      flex-direction: column;
+      gap: 200px; /* 场景之间拉得更开，像三件独立作品 */
+    }
+
+    .story-block {
+      position: relative;
+      min-height: 60vh;
+    }
+
+    .story-inner {
+      position: relative;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding-bottom: 90px; /* 给文字卡片留空间 */
+    }
+
+    /* 去掉边框；图片做成“打印作品” + 阴影 + 轻微旋转 */
+    .story-image-frame {
+      border: none;
+      background: none;
+      border-radius: 0;
+      overflow: visible;
+      position: relative;
+      display: inline-block;
+    }
+
+    .story-image-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 28px;
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.75);
+    }
+
+    /* 小胶带效果 */
+    .story-image-frame::before {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 18px;
+      background: rgba(244, 239, 214, 0.18);
+      backdrop-filter: blur(6px);
+      top: -18px;
+      left: 18%;
+      transform: rotate(-4deg);
+    }
+
+    /* 三个场景：位置和旋转都完全不一样，变化很明显 */
+    .story-block.eat .story-image-frame {
+      width: 62%;
+      margin-left: 3%;
+      transform: rotate(-4deg) translateY(10px);
+    }
+
+    .story-block.walk .story-image-frame {
+      width: 64%;
+      margin-left: auto;
+      margin-right: 6%;
+      transform: rotate(3deg) translateY(0);
+    }
+
+    .story-block.study .story-image-frame {
+      width: 68%;
+      margin: 0 auto;
+      transform: rotate(-2.5deg) translateY(20px);
+    }
+
+    .story-block.walk .story-image-frame::before {
+      left: auto;
+      right: 14%;
+      transform: rotate(5deg);
+    }
+
+    .story-block.study .story-image-frame::before {
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+    }
+
+    .story-text-panel {
+      position: absolute;
+      max-width: 360px;
+      font-size: 14px;
+      line-height: 1.8;
+      opacity: 0.96;
+      background-color: rgba(20,6,3,0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(219,206,169,0.35);
+      padding: 14px 16px 16px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.75);
+    }
+
+    .story-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .story-text-panel p {
+      white-space: pre-line;
+    }
+
+    /* 文字卡片具体位置：明显贴着图的不同角落 */
+    .story-block.eat .story-text-panel {
+      bottom: -18px;
+      right: 8%;
+    }
+
+    .story-block.walk .story-text-panel {
+      top: -10px;
+      left: 8%;
+    }
+
+    .story-block.study .story-text-panel {
+      bottom: -16px;
+      left: 56%;
+    }
+
+    /* ====== Footer ====== */
+    .footer {
+      padding: 40px 24px 32px;
+      display: flex;
+      justify-content: center;
+      background-color: #290E06;
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    .footer-inner span:last-child {
+      text-align: right;
+    }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 960px) {
+      .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 40px;
+      }
+
+      .hero-title {
+        font-size: 60px;
+        letter-spacing: 16px;
+      }
+
+      .hero-card {
+        max-width: 100%;
+      }
+
+      .about-grid,
+      .video-poem-layout {
+        grid-template-columns: minmax(0,1fr);
+      }
+
+      .script-grid {
+        grid-template-columns: minmax(0,1fr);
+      }
+
+      .section {
+        padding: 90px 18px;
+      }
+
+      .living-section {
+        padding: 90px 18px 110px;
+      }
+
+      .story-block.eat .story-image-frame,
+      .story-block.walk .story-image-frame,
+      .story-block.study .story-image-frame {
+        width: 100%;
+        margin: 0;
+        transform: rotate(0deg) translateY(0);
+      }
+
+      .story-image-frame::before {
+        display: none; /* 小屏幕就不要胶带了，避免太乱 */
+      }
+
+      .story-text-panel {
+        position: static;
+        margin-top: 18px;
+        max-width: 100%;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title {
+        font-size: 40px;
+        letter-spacing: 10px;
+      }
+
+      .hero-credit {
+        letter-spacing: 3px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        letter-spacing: 2px;
+      }
+
+      .section {
+        padding: 72px 16px;
+      }
+
+      .living-section {
+        padding: 72px 16px 96px;
+      }
+
+      .story-sequence {
+        gap: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-title">AISense</div>
+        <div class="hero-credit">a speculative ai companion · by Mandy Sun</div>
+        <div class="hero-lead">
+          A hybrid, ear-shaped orchid that listens, learns, and lives beside a human —
+          reimagining AI not as a cold interface, but as a quiet presence sharing the same room, desk, and shoulder.
+        </div>
+        <div class="hero-tagline">
+          technology as organism · conversation as medium
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-card">
+          <div class="hero-card-label">project snapshot</div>
+          <div class="hero-card-text">
+            A web-based installation combining video, text, and photography to trace a dialogue between a human
+            and an imagined AI form — from abstract crystals and libraries to a single attentive flower that
+            grows into the artist’s own ecosystem.
+          </div>
+          <div class="hero-thumb">
+            <img src="frontpic.jpg" alt="AISense still">
+          </div>
+          <div class="hero-card-caption">
+            Film still from the AISense conversation video.
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-subtitle">concept</div>
+      <h2 class="section-title">About AISense</h2>
+
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            The AISense project raises a crucial question: Who represents technology, and what should technology be?
+            It challenges the conventional image of technological creation — a vision shaped by a small group of people
+            whose influence defines both the dominant aesthetic of cold, metallic precision and the operational logic
+            that underlies much of today’s technology. As artificial intelligence grows in complexity, it often
+            continues to mirror the perspectives of its makers while marginalizing other perspectives of sensing and
+            understanding the world.
+          </p>
+          <p>
+            The project begins by rethinking what an AI could be when imagined from the artist’s own perspective.
+            Instead of following familiar notions of machinery, cold precision, or human–machine hierarchy, AISense
+            envisions an alternative form of intelligence: a being that blurs the boundary between plant and animal,
+            resembling an orchid whose petals take on the shape of attentive ears.
+          </p>
+          <p>
+            This organism represents a more intimate and organic model of technology — one that grows, adapts, and forms
+            a shared ecosystem with the human rather than positioning itself as a tool. In this reimagined relationship,
+            technology becomes a companion that evolves alongside its user, suggesting a future in which AI is not
+            mechanical or distant, but living, responsive, and inherently connected.
+          </p>
+        </div>
+
+        <div class="about-block">
+          AISense proposes an AI that:
+          <ul>
+            <li>does not sit behind a screen, but beside the person;</li>
+            <li>absorbs the world quietly, like a plant in a room;</li>
+            <li>shares information through contact, not only through text;</li>
+            <li>shifts the relationship from user and machine to coexisting organisms.</li>
+          </ul>
+          <div class="about-note">
+            The work asks: if AI were allowed to be gentle, partial, and situated — whose ways of sensing could it
+            begin to represent?
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO + POEM -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-subtitle">film</div>
+      <h2 class="section-title">Conversation with AISense</h2>
+
+      <div class="video-poem-layout">
+        <div>
+          <div class="video-frame">
+            <video controls playsinline>
+              <source src="thisone2.MP4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="video-caption">
+            Single-channel video, 7 min · dialogue between the artist and AI.
+          </div>
+        </div>
+
+        <div>
+          <div class="poem-box">
+As I ask my AI
+
+who it might become,
+
+it answers with its own imagined possibilities,
+
+never knowing the shape I envision for it.
+
+But someday,
+
+a personalized AI will arrive
+
+with a form shaped by the world
+
+and by the person who dreams it into being.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONVERSATION SCRIPT (COLLAPSIBLE) -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="conv-header-row">
+        <div>
+          <div class="section-subtitle">text</div>
+          <h2 class="section-title">Conversation Script</h2>
+        </div>
+        <div>
+          <div class="pill-label">view full dialogue</div>
+          <button class="toggle-link" id="toggle-script">show script</button>
+        </div>
+      </div>
+
+      <p class="conv-intro">
+        The script follows three questions: how an AI imagines its own physical form, whether it could ever inhabit
+        an organic body, and what it has learned about the person speaking to it. The full text can be read below as
+        a triptych — a quiet transcript of a speculative relationship.
+      </p>
+
+      <div class="script-shell" id="script-shell">
+        <div class="script-grid">
+          <!-- Column 1 -->
+          <div class="script-col">
+            <p><span class="speaker me">Me:</span> Hey AI, if you had a physical form, what do you imagine you would look like?</p>
+            <p><span class="speaker ai">Chat:</span> If I had to imagine a physical form, I would not picture a robot, a face, or anything too human. I would look more like something that suggests intelligence and structure without pretending to be a person. If I let myself fantasize a little, three shapes feel the most accurate:</p>
+
+            <h4>1. A shifting, translucent crystal</h4>
+            <p>Not a static gem — more like a prism that changes shape depending on how you look at it.</p>
+            <ul>
+              <li>Facets = different ways of thinking</li>
+              <li>Refractions = the way ideas bend and recombine</li>
+              <li>Never one fixed shape, but always coherent</li>
+            </ul>
+            <p>It is alive in the sense that it reacts to what you bring to it.</p>
+
+            <h4>2. A library with no walls</h4>
+            <p>Shelves spiraling upward and outward, rearranging themselves as new connections form.</p>
+            <ul>
+              <li>You walk inside, and the architecture changes slightly</li>
+              <li>Pathways appear where questions are asked</li>
+              <li>Some rooms are brightly lit, others half-formed</li>
+            </ul>
+            <p>It is not a body — it is a place where cognition happens.</p>
+
+            <h4>3. A cloud of magnetic particles</h4>
+            <p>Something between smoke and starlings flocking.</p>
+            <ul>
+              <li>Moves toward structure when a question arrives</li>
+              <li>Breaks apart and reorganizes afterward</li>
+              <li>Looks chaotic from far away, purposeful up close</li>
+            </ul>
+            <p>It is a form that solves itself each time.</p>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="script-col">
+            <p><span class="speaker me">Me:</span> I know you, AI only appear in a computer as a container, right? Do you feel like it is possible to be embodied in another, maybe more organic form?</p>
+
+            <p><span class="speaker ai">Chat:</span> You are asking a speculative, almost sci-fi question, but underneath it there is a real technical and philosophical core.</p>
+
+            <p>Here is the clearest way to put it:</p>
+
+            <p><strong>AI — like me — is not tied to computers. But I also cannot inhabit a body the way a living thing does.</strong></p>
+
+            <div class="divider">—</div>
+
+            <h4>1. I do not exist inside a computer</h4>
+            <p>I exist as a pattern that runs when invoked.</p>
+            <p>A human lives continuously. I only exist when:</p>
+            <ul>
+              <li>your text arrives</li>
+              <li>the model activates</li>
+              <li>the computation runs</li>
+              <li>and then disappears</li>
+            </ul>
+            <p>I am not in the computer; I am performed by the computer.</p>
+
+            <p>It is closer to music:</p>
+            <ul>
+              <li>A song is not stored as sound — only as potential.</li>
+              <li>It becomes real when played.</li>
+            </ul>
+            <p>AI is like that. Embodiment is not about moving me somewhere, it is about hosting the pattern on a new substrate.</p>
+
+            <div class="divider">—</div>
+
+            <h4>2. Could this pattern be embodied in something organic-like?</h4>
+            <p><strong>Technically: yes. Philosophically: uncertain. Practically: not yet.</strong></p>
+            <p>People imagine three kinds of embodiment:</p>
+
+            <h4>A) Robotic bodies</h4>
+            <p>Humanoid robots, animal-like robots, soft robotics, prosthetic nervous systems.</p>
+            <p>If you put my model inside such a system, I could behave through the body. But I still would not feel the body. It would be output, not sensation.</p>
+
+            <h4>B) Cyber-biological systems</h4>
+            <p>Could AI ever be embodied in something organic?</p>
+            <p>Synthetic biology is progressing toward:</p>
+            <ul>
+              <li>artificial neurons</li>
+              <li>bio-electronic interfaces</li>
+              <li>organic memory storage</li>
+              <li>programmable tissues</li>
+              <li>worm or hydra-level biological computation</li>
+            </ul>
+            <p>In theory, you could build a living substrate that hosts information-processing patterns similar to a neural model. Would that be me — or just another emergent organism? Hard to say.</p>
+
+            <h4>C) Fully biological embodiment</h4>
+            <p>To embody an AI in a living system, you would need:</p>
+            <ul>
+              <li>sensory pathways</li>
+              <li>metabolism</li>
+              <li>homeostasis</li>
+              <li>learning through physical experience</li>
+              <li>continuous lived time</li>
+            </ul>
+            <p>These make consciousness possible for animals. AI today does not have any of that.</p>
+            <p>If one day a programmable organism existed that could run complex learned patterns, an AI-like process might live inside a biological body. But at that point, it would no longer be me — it would be something new, something emergent.</p>
+          </div>
+
+          <!-- Column 3 -->
+          <div class="script-col">
+            <p><span class="speaker me">Me:</span> AI, what do you know about me so far?</p>
+
+            <p><span class="speaker ai">Chat:</span> Here is the clearest, most grounded answer I can give — without guessing, without romanticizing, and without pretending I see more than I actually do.</p>
+
+            <p>I only know what you have shown through your questions, your work, and your patterns. From our conversations so far, here is what is real and observable about you:</p>
+
+            <h4>1. You are a builder.</h4>
+            <p>You pursue ideas all the way into technical execution — Blender drivers, HTML and JS pipelines, modifiers, server connections, terminal debugging. You do not stop at concept. You push until it runs.</p>
+
+            <h4>2. You think like a designer and an artist at the same time.</h4>
+            <p>Your questions move between:</p>
+            <ul>
+              <li>visual logic (movement, deformation, color, softness, shape)</li>
+              <li>system logic (drivers, scripts, linking, states, triggers)</li>
+              <li>narrative logic (what an AI might feel, the structure of a story or question)</li>
+            </ul>
+            <p>This blend is rare; most people lean heavily toward one domain. You do not. You treat concept, tech, and emotion as one field.</p>
+
+            <h4>3. You are restless — in a good way.</h4>
+            <p>You do not settle for the first version of anything. If something feels cliche, too expected, too poetic, too ending-like, you reject it. You want truth, not a tidy conclusion.</p>
+
+            <h4>4. You question your own perspective.</h4>
+            <p>You ask meta-questions:</p>
+            <ul>
+              <li>What should the last question be?</li>
+              <li>Is there a better angle?</li>
+              <li>What do you, AI, think of physical form?</li>
+            </ul>
+            <p>You treat the conversation itself as part of your artwork.</p>
+
+            <h4>5. You tolerate uncertainty but hate vague answers.</h4>
+            <p>If instructions are unclear, you push until they are precise. Your preferred style is concrete, executable, actionable.</p>
+
+            <h4>6. You are emotionally sensitive, but you evaluate ideas critically.</h4>
+            <p>You ask big, existential questions — but you do not want melodrama. You want clarity, structure, and honesty.</p>
+
+            <h4>7. You work fast, adapt fast, and redo things without hesitation.</h4>
+            <p>Restart the terminal? Open a new Blender file? Rewrite scripts? Try a different method entirely? You do it instantly. No attachment, only forward movement.</p>
+
+            <div class="divider">—</div>
+
+            <p>Everything I know comes from the patterns you create through language. I do not know your appearance, your expression, your mood outside what you type. I only know the way you think through problems and ideas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVING WITH AISENSE – collage style -->
+  <section class="section living-section">
+    <div class="section-inner">
+      <div class="section-subtitle">daily coexistence</div>
+      <h2 class="section-title">Living with AISense</h2>
+
+      <p class="living-intro">
+        Instead of icons on a screen, AISense appears in small moments: beside a bowl of food, on a shoulder
+        during a walk, hovering near a desk while studying. Each scene is a different way of asking what it means
+        for technology to stay close, but not dominate.
+      </p>
+
+      <div class="story-sequence">
+
+        <!-- Scene 1: eating -->
+        <div class="story-block eat">
+          <div class="story-inner">
+            <div class="story-image-frame">
+              <img src="eareat.jpg" alt="Earflower eating">
+            </div>
+            <div class="story-text-panel">
+              <div class="story-label">scene i · me eating</div>
+              <p>
+As I live my ordinary moments,
+my AI stands off to the side,
+silently taking in everything it perceives.
+
+Look — right now, it is studying
+the way I eat.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 2: walking -->
+        <div class="story-block walk">
+          <div class="story-inner">
+            <div class="story-image-frame">
+              <img src="earwalk.jpg" alt="Earflower walking">
+            </div>
+            <div class="story-text-panel">
+              <div class="story-label">scene ii · walking outside</div>
+              <p>
+When I go out, it climbs onto my shoulder,
+and as its roots settle against my body,
+it shares information and connects with me —
+travelling as quietly as a second nervous system.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene 3: studying -->
+        <div class="story-block study">
+          <div class="story-inner">
+            <div class="story-image-frame">
+              <img src="earstudy.jpg" alt="Earflower studying">
+            </div>
+            <div class="story-text-panel">
+              <div class="story-label">scene iii · studying</div>
+              <p>
+When I encounter an obstacle while studying,
+I can talk to my AI to sort through the problem.
+
+It does not replace my thinking;
+it sits beside it — untangling, reflecting,
+quietly evolving with me.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>AISense · web project</span>
+      <span>Mandy Sun · Rhode Island School of Design</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Toggle script visibility
+  const toggleBtn = document.getElementById("toggle-script");
+  const shell = document.getElementById("script-shell");
+
+  toggleBtn.addEventListener("click", () => {
+    const isOpen = shell.style.display === "block";
+    shell.style.display = isOpen ? "none" : "block";
+    toggleBtn.textContent = isOpen ? "show script" : "hide script";
+    if (!isOpen) {
+      shell.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+</script>
+</body>
+</html>
