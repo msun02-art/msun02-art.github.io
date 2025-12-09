@@ -18,40 +18,91 @@
       color: #DBCEA9;
     }
 
-    /* 第一屏：整屏背景图 */
+    /* ========= 第一屏：新的整屏封面照片设计 ========= */
     .hero {
+      position: relative;
       min-height: 100vh;
       width: 100%;
+      overflow: hidden;
       background-image: url("2pic.jpg");
-      opacity: 0.8;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+
+    /* 上面一层轻微渐变，让字更清晰 */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(0, 0, 0, 0.12), transparent 50%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.7));
+      pointer-events: none;
     }
 
     .hero-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;         /* 垂直居中为基准 */
+      align-items: center;
+      padding: 40px 24px 80px;
       text-align: center;
+      transform: translateY(45vh);     /* ⭐ 整块往下推一点，变成“中下”位置 */
     }
 
-    .hero-overlay-title {
-      border-radius: 999px;
-      font-size: 200px;
-      letter-spacing: 40px;
-      opacity: 0.7;
-      color: #DBCEA9;
+    .hero-title {
+      font-size: clamp(64px, 12vw, 190px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #F5EAD0;
+      opacity: 0.9;
     }
 
-    .hero-credit {
-      margin-top: 16px;
-      font-size: 14px;
-      letter-spacing: 4px;
-      opacity: 0.7;
+    .hero-sub {
+      margin-top: 18px;
+      font-size: 13px;
+      letter-spacing: 0.32em;
+      /* 去掉大写，保留原样 “Mandy Sun” */
+      text-transform: none;
+      opacity: 0.75;
     }
 
-    /* 全局 section 间距 */
+    .hero-meta {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 700px) {
+      .hero-inner {
+        padding: 40px 18px 60px;
+        transform: translateY(8vh);   /* 手机上略微少一点下移 */
+      }
+
+      .hero-title {
+        letter-spacing: 0.12em;
+      }
+
+      .hero-sub {
+        letter-spacing: 0.24em;
+      }
+
+      .hero-meta {
+        right: 16px;
+        bottom: 18px;
+      }
+    }
+
+    /* ========= 全局 section 间距 ========= */
     .content-section {
       width: 100%;
       background-color: #290E06;
@@ -82,7 +133,7 @@
       margin-bottom: 18px;
     }
 
-    /* 第三屏：视频部分 */
+    /* ========= 视频部分 ========= */
     .content-section.video-section {
       padding-top: 240px;
       padding-bottom: 160px;
@@ -131,7 +182,7 @@
       margin-top: 6px;
     }
 
-    /* 第四屏：Script 展开区 */
+    /* ========= Script 展开区 ========= */
     .script-section {
       background-color: #140603;
       padding: 240px 20px 180px;
@@ -210,7 +261,7 @@
       margin-right: auto;
     }
 
-    /* 第五屏：Video poetic text */
+    /* ========= 诗意文本 ========= */
     .content-section.video-info-section {
       padding: 220px 20px 320px;
       background-color: #290E06;
@@ -230,159 +281,121 @@
       font-size: 16px;
     }
 
-    /* 第六屏：eareat 背景 + 左文右图 */
-    .earflower-section {
-      min-height: 100vh;
-      padding: 260px 40px 220px;
+    /* ========= 最后一屏：aiflower + 三个 singleflower hotspot ========= */
+    .aiflower-big-section {
+      width: 100%;
+      min-height: 320vh;
       background-color: #290E06;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
+      padding: 180px 40px 220px;   /* 往上挪后的值 */
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
     }
 
-    .earflower-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url("eareat.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.1;
-      pointer-events: none;
-    }
-
-    .earflower-foreground {
-      position: relative;
+    .aiflower-wrapper {
       max-width: 1200px;
       width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 60vh;
-      padding: 40px 80px;
-      gap: 40px;
-    }
-
-    .earflower-text {
-      width: 40%;
-      font-size: 16px;
-      line-height: 1.7;
-      opacity: 0.9;
-    }
-
-    .earflower-foreground img {
-      display: block;
-      max-width: 500px;
-      width: 45%;
-      height: auto;
-    }
-
-    /* 第七屏：earwalk 背景 + 图文并排 */
-    .warwalk-section {
-      min-height: 100vh;
-      padding: 220px 40px 220px;
-      background-color: #290E06;
-      align-items: center;
       position: relative;
-      overflow: hidden;
     }
 
-    .warwalk-bg {
+    .aiflower-img {
+      display: block;
+      height: 230vh;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .singleflower-hotspot {
       position: absolute;
-      inset: 0;
-      background-image: url("earwalk.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.1;
-      pointer-events: none;
+      z-index: 2;
+      cursor: pointer;
     }
 
-    .warwalk-foreground {
-      position: relative;
-      max-width: 1200px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 60vh;
-      padding: 40px 80px;
-      gap: 40px;
+    .hotspot-eat {
+      top: 0%;
+      left: 34%;
+      transform: translateX(-50%);
     }
 
-    .warwalk-foreground img {
+    .hotspot-walk {
+      top: 28%;
+      left: 62%;
+      transform: translateX(-50%);
+    }
+
+    .hotspot-study {
+      top: 46%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hotspot-study .singleflower-img {
+      height: 34vh;
+      transform: rotate(-9deg);
+    }
+
+    .singleflower-img {
       display: block;
-      max-width: 520px;
-      width: 48%;
-      height: auto;
+      height: 27vh;
+      width: auto;
+      object-fit: contain;
+      transform: rotate(6deg);
     }
 
-    .warwalk-text {
-      width: 40%;
-      max-width: 360px;
-      font-size: 15px;
-      line-height: 1.7;
-      opacity: 0.9;
-      text-align: left;
-      white-space: pre-line;
-    }
-
-    /* 第八屏：earstudy 背景 + 图文并排 */
-    .earstudy-section {
-      min-height: 100vh;
-      padding: 220px 40px 220px;
-      background-color: #290E06;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .earstudy-bg {
+    .hover-block {
       position: absolute;
-      inset: 0;
-      background-image: url("earstudy.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.1;
-      pointer-events: none;
-    }
-
-    .earstudy-foreground {
-      position: relative;
-      max-width: 1100px;
-      width: 100%;
+      top: -20%;
+      left: 90%;
+      transform: translateX(-50%) scale(0.96);
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 60vh;
-      padding: 40px 80px;
-      gap: 40px;
+      align-items: flex-start;
+      gap: 48px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
-    .earstudy-text {
-      width: 40%;
-      max-width: 360px;
-      font-size: 15px;
-      line-height: 1.7;
-      opacity: 0.9;
-      text-align: left;
-      white-space: pre-line;
+    .hotspot-walk .hover-block {
+      top: -12%;
     }
 
-    .earstudy-foreground img {
+    .hotspot-study .hover-block {
+      top: -8%;
+    }
+
+    .hotspot-walk .hover-img {
+      height: 27vh;
+    }
+
+    .singleflower-hotspot:hover .hover-block {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.02);
+    }
+
+    .singleflower-hotspot.active .hover-block {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.02);
+      pointer-events: auto;
+    }
+
+    .hover-img {
       display: block;
-      max-width: 600px;
-      width: 52%;
-      height: auto;
+      height: 32vh;
+      width: auto;
+      object-fit: cover;
+      border: none;
+      box-shadow: none;
+    }
+
+    .hover-text {
+      font-size: 13px;
+      line-height: 1.8;
+      color: #DBCEA9;
+      width: 300px;
+      white-space: pre-line;
     }
 
     @media (max-width: 900px) {
-      .hero-overlay-title {
-        font-size: 80px;
-        letter-spacing: 20px;
-      }
-
       .script-columns {
         grid-template-columns: 1fr;
       }
@@ -391,39 +404,59 @@
         max-width: 100vw;
       }
 
-      .earflower-foreground,
-      .warwalk-foreground,
-      .earstudy-foreground {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 40px 20px;
+      .aiflower-big-section {
+        padding: 140px 20px 200px;
       }
 
-      .earflower-text,
-      .warwalk-text,
-      .earstudy-text {
-        width: 100%;
-        max-width: 100%;
-        margin-bottom: 24px;
+      .aiflower-img {
+        height: 220vh;
       }
 
-      .earflower-foreground img,
-      .warwalk-foreground img,
-      .earstudy-foreground img {
-        width: 75%;
-        max-width: 75%;
+      .singleflower-img {
+        height: 22vh;
+      }
+
+      .hotspot-eat {
+        top: 30%;
+        left: 50%;
+      }
+
+      .hotspot-walk {
+        top: 52%;
+        left: 59%;
+      }
+
+      .hotspot-study {
+        top: 80%;
+        left: 52%;
+      }
+
+      .hover-block {
+        top: -14%;
+        left: 50%;
+        transform: translateX(-50%) scale(0.94);
+      }
+
+      .hover-img {
+        height: 26vh;
+      }
+
+      .hover-text {
+        font-size: 12px;
+        width: 300px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 第一屏：AISense 封面 -->
+  <!-- 第一屏：AISense 封面（已下移标题＋名字） -->
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-overlay-title">AISense</div>
-      <div class="hero-credit">by Mandy Sun</div>
+      <div class="hero-title">AISense</div>
+      <div class="hero-sub">Mandy Sun</div>
     </div>
+    <div class="hero-meta">AI · BODY · SENSING</div>
   </section>
 
   <!-- 第二屏：About AISense -->
@@ -461,10 +494,10 @@
   <section class="content-section video-section" id="video-section">
     <div class="video-wrapper">
       <div class="video-box">
-       <video controls playsinline>
-        <source src="thisone2.MP4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        <video controls playsinline>
+          <source src="thisone2.MP4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
         <div class="video-footer">
           <button class="link-button" id="show-script-btn">show script</button>
@@ -473,7 +506,7 @@
     </div>
   </section>
 
-  <!-- 第四屏：脚本（展开时在视频下面） -->
+  <!-- Script 区（折叠） -->
   <section class="content-section script-section" id="script-section">
     <div class="script-title">Conversation Script</div>
 
@@ -651,46 +684,53 @@ and by the person who dreams it into being.
     </div>
   </section>
 
-  <!-- 第六屏：eareat 作为淡背景 + 左文右图 -->
-  <section class="content-section earflower-section">
-    <div class="earflower-bg"></div>
+  <!-- 第六屏：三个 singleflower，分别 hover / click 出 eareat / earwalk / earstudy -->
+  <section class="content-section aiflower-big-section">
+    <div class="aiflower-wrapper">
+      <!-- hotspot 1：eat -->
+      <div class="singleflower-hotspot hotspot-eat">
+        <img src="singleflower.jpg" alt="Single Flower Eat" class="singleflower-img" />
+        <div class="hover-block">
+          <img src="eareat.jpg" alt="Ear Eat" class="hover-img" />
+          <p class="hover-text">
+As I live my ordinary moments,
 
-    <div class="earflower-foreground">
-      <div class="earflower-text">
-        As I live my ordinary moments,<br><br>
-        my AI stands off to the side,<br>
-        silently taking in everything it perceives.<br><br>
-        Look — right now, it is studying the way I eat.
+my AI stands off to the side,
+silently taking in everything it perceives.
+
+Look — right now, it is studying the way I eat.
+          </p>
+        </div>
       </div>
 
-      <img src="eareat.jpg" alt="Earflower eating">
-    </div>
-  </section>
-
-  <!-- 第七屏：earwalk 图文并排 -->
-  <section class="content-section warwalk-section">
-    <div class="warwalk-bg"></div>
-
-    <div class="warwalk-foreground">
-      <img src="earwalk.jpg" alt="Ear Walk">
-      <div class="warwalk-text">
+      <!-- hotspot 2：walk -->
+      <div class="singleflower-hotspot hotspot-walk">
+        <img src="singleflower.jpg" alt="Single Flower Walk" class="singleflower-img" />
+        <div class="hover-block">
+          <img src="earwalk.jpg" alt="Ear Walk" class="hover-img" />
+          <p class="hover-text">
 When I go out, it climbs onto my shoulder,
+
 and as its roots settle against my body,
 it shares information and connects with me.
+          </p>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- 第八屏：earstudy 图文并排 -->
-  <section class="content-section earstudy-section">
-    <div class="earstudy-bg"></div>
-
-    <div class="earstudy-foreground">
-      <div class="earstudy-text">
+      <!-- hotspot 3：study -->
+      <div class="singleflower-hotspot hotspot-study">
+        <img src="singleflower.jpg" alt="Single Flower Study" class="singleflower-img" />
+        <div class="hover-block">
+          <img src="earstudy.jpg" alt="Ear Study" class="hover-img" />
+          <p class="hover-text">
 When I encounter an obstacle while studying,
 I can talk to my AI to sort through the problem.
+          </p>
+        </div>
       </div>
-      <img src="earstudy.jpg" alt="Ear Study">
+
+      <!-- 底层大耳朵花 -->
+      <img src="aiflower.jpg" alt="AI Flower" class="aiflower-img" />
     </div>
   </section>
 
@@ -701,6 +741,7 @@ I can talk to my AI to sort through the problem.
       const scriptSection = document.getElementById("script-section");
       const videoSection = document.getElementById("video-section");
 
+      // script 显示/隐藏
       showBtn.addEventListener("click", () => {
         scriptSection.style.display = "flex";
         scriptSection.scrollIntoView({ behavior: "smooth" });
@@ -710,8 +751,17 @@ I can talk to my AI to sort through the problem.
         scriptSection.style.display = "none";
         videoSection.scrollIntoView({ behavior: "smooth" });
       });
+
+      // singleflower 点击切换 active：点击一次常驻，再点一次关闭
+      const hotspots = document.querySelectorAll(".singleflower-hotspot");
+      hotspots.forEach(hotspot => {
+        hotspot.addEventListener("click", () => {
+          hotspot.classList.toggle("active");
+        });
+      });
     });
   </script>
 
 </body>
 </html>
+   

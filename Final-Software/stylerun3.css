@@ -1,11 +1,9 @@
 /* ========= 外层灰底，只是方便你在电脑上预览手机 ========= */
 .wrapper-main {
   width: 100%;
-  min-height: 100vh;       /* 铺满视口高度 */
-  padding-top: 40px;       /* 只在顶部留灰色空隙 */
-  padding-bottom: 0;
+  min-height: 100vh;
+  padding-top: 40px;
   background-color: #e0e0e0;
-
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -18,6 +16,9 @@
   max-width: 402px;
   min-height: 874px;
   position: relative;
+
+  display: flex;
+  flex-direction: column; /* 让中间区域和底部导航上下排布 */
 }
 
 /* 顶部栏 */
@@ -26,6 +27,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 32px 30px 16px;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -44,96 +46,152 @@
 .username {
   font-size: 18px;
   color: #57a368;
+  margin-top: 10px;
   font-family: "Carlito", sans-serif;
-  display: inline-block;   /* 让 margin-top 生效 */
-  margin-top: 10px;  
 }
 
-/* 绿色横线 */
+/* 顶部分隔线 */
 .top-divider {
   height: 4px;
   width: 100%;
   background-color: #57a368;
+  flex-shrink: 0;
 }
 
-/* ========= 中间黄色 grid（交错的黄方块） ========= */
+/* ========= 中间网格背景（大号棋盘格，黄/白交错） ========= */
 .yellow-grid {
-  padding: 20px 0 80px;         /* 整块略往上收一点 */
-  display: grid;
-  grid-template-columns: repeat(3, 120px);
-  grid-auto-rows: 120px;
-  column-gap: 0;
-  row-gap: 0;
-  width: 360px;
-  margin: 0 auto;
-  justify-content: center;
-  background: transparent;
-  position: relative;           /* 让 calendar/progress/plan 以它为参照 */
-}
-
-/* 单个黄色格子 */
-.grid-cell {
+  position: relative;
   width: 100%;
-  height: 100%;
-  background-color: #f4ff75;
+  box-sizing: border-box;
+  padding: 20px 20px 20px;
+  flex: 1; /* 填满 header 和 bottom-nav 之间 */
+
+  background-color: #ffffff;
+
+  /* 1,2: 棋盘色块；3,4: 竖线/横线 */
+  background-image:
+    linear-gradient(
+      45deg,
+      #F9FFC4 25%,
+      transparent 25%,
+      transparent 75%,
+      #F9FFC4 75%,
+      #F9FFC4
+    ),
+    linear-gradient(
+      45deg,
+      #F9FFC4 25%,
+      transparent 25%,
+      transparent 75%,
+      #F9FFC4 75%,
+      #F9FFC4
+    ),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+
+  /* ⭐ 放大后的尺寸：每个大棋盘格 80x80，小格 40x40 */
+  background-size:
+    80px 80px,  /* 棋盘层 1 */
+    80px 80px,  /* 棋盘层 2 */
+    40px 40px,  /* 竖线 */
+    40px 40px;  /* 横线 */
+
+  background-position:
+    0 0,
+    40px 40px,  /* 第二层偏移半格，实现行/列交错 */
+    0 0,
+    0 0;
 }
 
-/* 交错 layout */
-.cell-1 { grid-row: 1; grid-column: 1; }
-.cell-2 { grid-row: 1; grid-column: 3; }
-.cell-3 { grid-row: 2; grid-column: 2; }
-.cell-4 { grid-row: 3; grid-column: 1; }
-.cell-5 { grid-row: 3; grid-column: 3; }
-.cell-6 { grid-row: 4; grid-column: 2; }
-.cell-7 { grid-row: 5; grid-column: 1; }
-.cell-8 { grid-row: 5; grid-column: 3; }
+/* ========= 顶部一行星期 + 一行日期 ========= */
+.calendar-week {
+  position: absolute;
+  top: 24px;
+  left: 20px;
+  right: 20px;
+  z-index: 2;
+  font-family: "Carlito", sans-serif;
+}
 
-/* ========= Progress 红块 ========= */
+/* 星期行：Mon Tue Wed... */
+.calendar-weekdays {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #57a368;
+}
+
+/* 日期行：对应一周的日期数字 */
+.calendar-dates {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  color: #344046;
+}
+
+/* 单个日期数字 */
+.calendar-date {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 今天：橙色圆点标记在数字背后 */
+.calendar-date.is-today {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.calendar-date.is-today::before {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #ff9b4a;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+/* ========= Progress ========= */
 .progress-red {
   position: absolute;
-  top: 260px;                 /* 相对 yellow-grid 顶部的位置 */
-  left: 120px;
+  top: 260px;
+  left: 140px;
   width: 240px;
   height: 120px;
-  background-color: rgba(255, 133, 133, 0.7);
+  background-color: rgba(255, 133, 133, 0.75);
   box-sizing: border-box;
   padding: 10px 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-family: "Carlito", sans-serif;
-  color: #AA0000;
-  z-index: 1;
+  z-index: 2;
 }
 
-/* “Progress” 文本 */
 .progress-header {
   font-size: 28px;
   font-weight: 700;
-  text-transform: capitalize;
-  margin-top: 60px;
   margin-left: 5px;
+  margin-top: 55px;
 }
 
-/* 预留中间内容区 */
 .progress-grid {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 4px;
-  font-size: 16px;
+  /* 占位，后面你可以放内容 */
 }
 
-/* ========= Plan 形状 ========= */
+/* ========= Plan ========= */
 .plan-shape {
   position: absolute;
   top: 380px;
-  left: 120px;
+  left: 140px;
   width: 240px;
   height: 240px;
-  background-color: rgba(213, 97, 255, 0.7);
+  background-color: rgba(213, 97, 255, 0.75);
   clip-path: polygon(
     0% 0%,
     100% 0%,
@@ -145,129 +203,43 @@
   z-index: 2;
 }
 
-/* Plan 文本 */
 .plan-header {
   position: absolute;
   top: 390px;
-  left: 130px;
+  left: 150px;
   font-size: 28px;
+  color: #aa00aa;
   font-weight: 700;
-  text-transform: capitalize;
-  color: #AA00AA;
-  font-family: "Carlito", sans-serif;
   z-index: 3;
-  margin-top: 60px;
-  margin-left: 5px;
-}
-
-/* ========= 蓝色 Calendar square ========= */
-.calendar-blue {
-  position: absolute;
-  top: 20px;                  /* ⭐ 和第一排 yellow grid 顶边对齐 */
-  left: 0;
-  width: 240px;               /* 2 列 × 120px */
-  height: 240px;
-  background-color: rgba(157, 233, 225, 0.8);
-  padding: 14px 16px 16px;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-/* 标题 Calendar */
-.calendar-header {
-  font-family: "Carlito", sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #3700FE;
-  margin-bottom: 6px;
-  margin-top: 5px;
-  margin-left: 5px;
-}
-
-/* 数字网格：均匀铺满蓝 square 剩余空间 */
-.calendar-grid {
-  margin-top: 6px;
-  height: calc(100% - 30px);
-
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  row-gap: 0;
-  column-gap: 0;
-
-  justify-items: center;
-  align-items: center;
-
-  font-family: "Carlito", sans-serif;
-  font-size: 16px;
-  color: #3700FE;
-}
-
-/* 每个日期格子 */
-.calendar-day {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 3;
-}
-
-/* 今天的文字 */
-.calendar-day.is-today {
-  font-weight: 700;
-  color: #c54520;
-  z-index: 1;
-}
-
-/* 今天后面的圆形标记 */
-.calendar-day.is-today::before {
-  content: "";
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: #ffeb99;
-  z-index: -1;
 }
 
 /* ========= 底部导航 ========= */
 .bottom-nav {
-  position: absolute;
-  left: 0;
-  bottom: 0;
   height: 100px;
-  width: 100%;              /* 只占 iphone-pro 的宽度 */
+  width: 100%;
   background-color: #f4ff75;
-
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: stretch; /* 让子元素拉满整行 */
-  padding: 0;               /* 不要横向 padding，否则会挤出屏 */
+  flex-shrink: 0;
 }
 
-/* 所有按钮：平均分 1/3 */
 .nav-item {
-  flex: 1;                       /* ⭐ 每个占 1/3 宽度 */
+  flex: 1;
   height: 100%;
-  background: none;
   border: none;
-  cursor: pointer;
-
-  font-family: "Carlito", sans-serif;
+  background: none;
   font-size: 18px;
   font-weight: 600;
   color: #57a368;
-
+  font-family: "Carlito", sans-serif;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
-/* 当前选中的按钮：白色方块背景 */
 .nav-item.active {
-  background-color: #ffffff;
+  background: none;
+  box-shadow: none;
   color: #57a368;
-  box-shadow: 0 0 0 2px rgba(87, 163, 104, 0.2);
 }
