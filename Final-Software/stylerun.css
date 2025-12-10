@@ -1,4 +1,3 @@
-/* 外层灰底，只是方便你在电脑上预览手机 */
 .wrapper-main {
   width: 100%;
   padding: 40px 0;
@@ -7,15 +6,14 @@
   justify-content: center;
 }
 
-/* “手机壳” */
 .iphone-pro {
   background-color: #ffffff;
   width: 100%;
   max-width: 402px;
   min-height: 874px;
   position: relative;
+  overflow: hidden;
 }
-
 
 .iphone-pro .yellow-ball {
   position: absolute;
@@ -58,7 +56,7 @@
   }
   100% {
     transform: scale(0.15);
-    opacity: 0;   /* 需要的话，保留渐隐；如果不想淡出，就删掉这一行 */
+    opacity: 0; 
   }
 }
 
@@ -75,19 +73,14 @@
 }
 
 @keyframes endTextAppear {
-  /* 起点：在原位，刚出现 */
   0% {
     opacity: 0.5;
     transform: translate(-50%, -20px) scale(1);
   }
-
-  /* 前面一小段：淡入 + 稍微上移一点，节奏柔和一些 */
   20% {
     opacity: 1;
     transform: translate(-50%, -40px) scale(1.4);
   }
-
-  /* 终点：往上总共飘 300px，并稍微变大一点 */
   100% {
     opacity: 1;
     transform: translate(-50%, -280px) scale(2.3);
@@ -118,7 +111,6 @@
 }
 
 
-/* head*/
 .iphone-pro .ellipse {
   position: absolute;
   top: 333px;
@@ -129,7 +121,7 @@
   border-radius: 77px;
 }
 
-/* right eye white*/
+
 .iphone-pro .div {
   position: absolute;
   top: 390px;
@@ -160,8 +152,6 @@
 
 
 
-
-/* right eye black*/
 .iphone-pro .ellipse-2 {
   position: absolute;
   top: 395px;
@@ -190,7 +180,7 @@
   100% { left: 223px; top: 398px; }
 }
 
-/* right eye hightlight */
+
 .iphone-pro .ellipse-3 {
   position: absolute;
   top: 398px;
@@ -221,7 +211,7 @@
 }
 
 
-/* left eye white*/
+
 .iphone-pro .ellipse-4 {
   position: absolute;
   top: 390px;
@@ -252,7 +242,6 @@
   100% { left: 172px; top: 390px; }
 }
 
-/* left eye black*/
 .iphone-pro .ellipse-5 {
   position: absolute;
   top: 395px;
@@ -281,7 +270,7 @@
   100% { left: 180px; top: 398px; }
 }
 
-/* left eye hightlight */
+
 .iphone-pro .ellipse-6 {
   position: absolute;
   top: 398px;
@@ -565,14 +554,12 @@
   text-align: center;
   line-height: 40px;
   animation: startBtnAppear 1s ease-out 12s forwards;
-  /*                                  ↑
-                              这里就是 animation-delay */
 }
 
 @keyframes startBtnAppear {
   0% {
     opacity: 0;
-    transform: translate(-50%, 20px);   /* 稍微低一点 */
+    transform: translate(-50%, 20px);   
   }
   100% {
     opacity: 1;

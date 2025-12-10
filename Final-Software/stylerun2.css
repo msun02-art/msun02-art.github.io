@@ -1,4 +1,3 @@
-/* 外层灰底，只是方便你在电脑上预览手机 */
 .wrapper-main {
   width: 100%;
   padding: 40px 0;
@@ -7,7 +6,6 @@
   justify-content: center;
 }
 
-/* “手机壳” */
 .iphone-pro {
   background-color: #ffffff;
   width: 100%;

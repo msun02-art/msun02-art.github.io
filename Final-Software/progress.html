@@ -1,36 +1,579 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="globals.css" />
-    <link rel="stylesheet" href="stylerun5.css" />
-  </head>
-  <body>
-    <div class="iphone-pro">
-  <div class="character">
-    <div class="ellipse"></div>
-    <div class="div"></div>
-    <div class="ellipse-2"></div>
-    <div class="ellipse-3"></div>
-    <div class="ellipse-4"></div>
-    <div class="ellipse-5"></div>
-    <div class="ellipse-6"></div>
-    <div class="ellipse-7"></div>
-    <div class="ellipse-8"></div>
-    <div class="ellipse-9"></div>
-    <div class="ellipse-10"></div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FUNRUN – Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <img class="img" src="img/你的那张小图.svg" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"/>
 
-    <img class="vector" src="img/vector.svg" />
-    <img class="vector-2" src="img/vector-2.svg" />
-    <img class="vector-3" src="img/vector-3.svg" />
-    <img class="vector-4" src="img/vector-4.svg" />
-    <img class="vector-5" src="img/vector-5.svg" />
-    <img class="vector-6" src="img/vector-6.svg" />
-    <img class="polygon" src="img/polygon.svg" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Carlito", sans-serif;
+      background-color: #e0e0e0;
+    }
+
+    .wrapper-main {
+      width: 100%;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background-color: #e0e0e0;
+    }
+
+    .iphone-pro {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 402px;
+      min-height: 874px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== 顶部头像 ===== */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 30px 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background-color: #f4ff75;
+    }
+
+    .username {
+      font-size: 18px;
+      color: #57a368;
+      margin-top: 10px;
+    }
+
+    .top-divider {
+      height: 4px;
+      width: 100%;
+      background-color: #57a368;
+    }
+
+    /* ===== 顶部 Home / Progress 行 ===== */
+    .progress-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px 8px;
+      color: #57a368;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .back-home {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .back-home-arrow {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .progress-title-right {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .content-scroll {
+      flex: 1;
+      padding: 8px 24px 120px;
+      overflow-y: auto;
+    }
+
+
+    .progress-card {
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      padding: 24px 20px 24px;
+    }
+
+    .progress-message {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #3224ff;
+      margin-bottom: 24px;
+    }
+
+
+    .donut-wrapper {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      margin: 16px auto 0;  
+    }
+
+    #donutCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .donut-center-text {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 22px;
+      color: #799f77;
+      font-weight: 700;
+    }
+
+    .progress-mascot {
+      margin-top: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .mascot {
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+
+    .mascot-head {
+      position: absolute;
+      left: 50%;
+      top: 16%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 130px;
+      background-color: #57a267;
+      border-radius: 70px;
+    }
+
+    .mascot-foot {
+      position: absolute;
+      width: 54px;
+      height: auto;
+    }
+
+    .mascot-foot-left {
+      bottom: -18px;
+      left: 26px;
+      transform: scale(0.9);
+    }
+
+    .mascot-foot-right {
+      bottom: -21px;
+      right: 26px;
+      transform: scale(0.8);
+    }
+
+    .mascot-brow {
+      position: absolute;
+      width: 10px;
+      height: auto;
+    }
+
+    .mascot-brow-left {
+      top: 60px;
+      left: 50px;
+    }
+
+    .mascot-brow-right {
+      top: 60px;
+      right: 68px;
+    }
+
+    .mascot-nose {
+      position: absolute;
+      width: 23px;
+      height: auto;
+      top: 100px;
+      left: 45%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .mascot-mouth {
+      position: absolute;
+      width: 12px;
+      height: auto;
+      top: 115px;
+      left: 47%;
+      transform: translateX(-50%);
+    }
+
+    .mascot-mouth-fold {
+      position: absolute;
+      width: 7px;
+      height: auto;
+      top: 115px;
+      left: 52%;
+      transform: translateX(-50%);
+    }
+
+    .mascot-blush {
+      position: absolute;
+      width: 25px;
+      height: 10px;
+      background-color: #ffd5fc;
+      border-radius: 16px / 7px;
+    }
+
+    .mascot-blush-left {
+      top: 102px;
+      left: 28px;
+      z-index: 3;
+    }
+
+    .mascot-blush-right {
+      top: 102px;
+      right: 32px;
+    }
+
+    .eye {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+    }
+
+    .eye-left {
+      top: 81px;
+      left: 50px;
+    }
+
+    .eye-right {
+      top: 81px;
+      right: 61px;
+    }
+
+    .eye-white {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background-color: #ffffff;
+    }
+
+    .eye-pupil {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #000000;
+      left: 46%;
+      top: 20%;
+      transform: translate(-28%, -20%);
+    }
+
+    .eye-highlight {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      top: 6px;
+      left: 13px;
+    }
+
+    .mascot-cheek {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: #57a267;
+    }
+
+    .mascot-cheek-left {
+      top: 90px;
+      left: 10px;
+      z-index: 2;
+    }
+
+    .mascot-cheek-right {
+      top: 90px;
+      right: 10px;
+    }
+
+
+    .progress-bar-wrapper {
+      position: relative;
+      margin-top: 24px;
+    }
+
+    .progress-bar-track {
+      position: relative;
+      width: 100%;
+      height: 42px;
+      background-color: #a7ffd0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 14%;    
+      background-color: #57a368;
+      opacity: 0.4;
+    }
+
+
+    .progress-bar-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 80px;
+      height: 100%;          
+      background-color: #f4ff75;
+      border-radius: 6px 0 0 6px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #57a368;
+    }
+
+   
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 100px;
+      width: 100%;
+      background-color: #f4ff75;
+
+      display: flex;
+      align-items: center;
+      justify-content: stretch;
+      padding: 0;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      font-family: "Carlito", sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #57a368;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item.active {
+      background: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 420px) {
+      .content-scroll {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper-main">
+  <div class="iphone-pro">
+    <header class="top-bar">
+      <div class="user-info">
+        <div class="avatar-circle"></div>
+        <span class="username">Username</span>
+      </div>
+    </header>
+
+    <div class="top-divider"></div>
+
+    <div class="progress-header-row">
+      <div class="back-home" id="back-home">
+        <span class="back-home-arrow">←</span>
+        <span>Home</span>
+      </div>
+      <div class="progress-title-right">Progress</div>
+    </div>
+
+    <main class="content-scroll">
+      <section class="progress-card">
+        <div class="progress-message" id="progress-message">
+          You have already completed 14% of your running goal! Good job!
+        </div>
+
+        <div class="donut-wrapper">
+          <canvas id="donutCanvas"></canvas>
+          <div class="donut-center-text" id="donut-percent">14%</div>
+        </div>
+
+        <div class="progress-mascot">
+          <div class="mascot">
+            <div class="mascot-head"></div>
+
+            <div class="mascot-cheek mascot-cheek-left"></div>
+            <div class="mascot-cheek mascot-cheek-right"></div>
+
+            <div class="eye eye-left">
+              <div class="eye-white"></div>
+              <div class="eye-pupil"></div>
+              <div class="eye-highlight"></div>
+            </div>
+            <div class="eye eye-right">
+              <div class="eye-white"></div>
+              <div class="eye-pupil"></div>
+              <div class="eye-highlight"></div>
+            </div>
+
+            <div class="mascot-blush mascot-blush-left"></div>
+            <div class="mascot-blush mascot-blush-right"></div>
+
+            <img src="vector-19.svg" class="mascot-brow mascot-brow-left" alt="">
+            <img src="vector-20.svg" class="mascot-brow mascot-brow-right" alt="">
+            <img src="polygon.svg"  class="mascot-nose" alt="">
+            <img src="vector-17.svg" class="mascot-mouth" alt="">
+            <img src="vector-18.svg" class="mascot-mouth-fold" alt="">
+            <img src="foot.svg"   class="mascot-foot mascot-foot-left"  alt="">
+            <img src="foot2.svg"  class="mascot-foot mascot-foot-right" alt="">
+          </div>
+        </div>
+
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            <div class="progress-bar-label" id="progress-bar-label">14%</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" id="nav-home">Home</button>
+      <button class="nav-item" id="nav-run">Run</button>
+      <button class="nav-item" id="nav-gallery">Gallery</button>
+    </nav>
   </div>
 </div>
-  </body>
+
+<script>
+  function computeProgressPercent() {
+    const plan = JSON.parse(localStorage.getItem("funrun_plan_goal") || "null");
+    if (!plan || !plan.start || !plan.end || !plan.distance) return 14;
+
+    const startDate = new Date(plan.start);
+    const endDate   = new Date(plan.end);
+    const perDay    = parseFloat(plan.distance);
+
+    if (isNaN(startDate) || isNaN(endDate) || isNaN(perDay) || perDay <= 0) {
+      return 14;
+    }
+
+    const diffMs = endDate - startDate;
+    if (diffMs <= 0) return 14;
+
+    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const totalTargetKm = days * perDay;
+
+    const simulatedRatio = 0.14; 
+    let percent = Math.round(simulatedRatio * 100);
+    if (percent > 100) percent = 100;
+    if (percent < 0)   percent = 0;
+    return percent;
+  }
+
+  function drawDonut(percent) {
+    const canvas = document.getElementById("donutCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const radius      = Math.min(w, h) / 2 - 10;
+    const innerRadius = radius * 0.6;
+
+    const startAngle = -Math.PI / 2;
+    const endAngle   = startAngle + (percent / 100) * Math.PI * 2;
+
+    ctx.clearRect(0, 0, w, h);
+
+
+    ctx.lineWidth  = radius - innerRadius;
+    ctx.strokeStyle = "#a7ffd0";
+    ctx.beginPath();
+    ctx.arc(cx, cy, (radius + innerRadius) / 2, 0, Math.PI * 2);
+    ctx.stroke();
+
+
+    ctx.strokeStyle = "#f4ff75";
+    ctx.beginPath();
+    ctx.arc(cx, cy, (radius + innerRadius) / 2, startAngle, endAngle);
+    ctx.stroke();
+  }
+
+  function updateUI(percent) {
+    const msgEl   = document.getElementById("progress-message");
+    const center  = document.getElementById("donut-percent");
+    const fillEl  = document.getElementById("progress-bar-fill");
+    const labelEl = document.getElementById("progress-bar-label");
+
+    const p = Math.max(0, Math.min(percent, 100));
+
+    if (msgEl)   msgEl.textContent = `You have already completed ${p}% of your running goal! Good job!`;
+    if (center)  center.textContent = p + "%";
+    if (fillEl)  fillEl.style.width = p + "%";
+    if (labelEl) labelEl.textContent = p + "%";
+  }
+
+  window.addEventListener("load", () => {
+    const percent = computeProgressPercent();
+    updateUI(percent);
+    drawDonut(percent);
+    window.addEventListener("resize", () => drawDonut(percent));
+
+    document.getElementById("back-home")?.addEventListener("click", () => {
+      window.location.href = "homepage.html";
+    });
+    document.getElementById("nav-home")?.addEventListener("click", () => {
+      window.location.href = "homepage.html";
+    });
+    document.getElementById("nav-run")?.addEventListener("click", () => {
+      window.location.href = "runmode.html";
+    });
+    document.getElementById("nav-gallery")?.addEventListener("click", () => {
+      window.location.href = "gallery.html";
+    });
+  });
+</script>
+</body>
 </html>

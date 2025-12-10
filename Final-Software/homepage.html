@@ -11,11 +11,9 @@
     <link rel="stylesheet" href="stylerun3.css" />
     <link rel="stylesheet" href="globals.css" />
   </head>
-
   <body>
     <div class="wrapper-main">
       <div class="iphone-pro">
-        <!-- 顶部头像 + 名字 -->
         <header class="top-bar">
           <div class="user-info">
             <div class="avatar-circle"></div>
@@ -25,96 +23,113 @@
 
         <div class="top-divider"></div>
 
-        <!-- 中间大网格背景区域 -->
-        <div class="yellow-grid">
-          <!-- 一行星期 + 一行日期 -->
-          <div class="calendar-week">
-            <div class="calendar-weekdays">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span>Sun</span>
-            </div>
+        <div class="calendar-strip">
+          <div class="weekday-row">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+          </div>
+          <div class="date-row" id="calendar-dates"></div>
+        </div>
 
-            <div class="calendar-dates" id="calendar-dates"></div>
+        <div class="yellow-grid">
+          <div class="notes-panel">
+            <div class="notes-title">Notes</div>
+            <textarea
+              class="notes-text"
+              placeholder="Write your notes here..."
+            ></textarea>
           </div>
 
-          <!-- Progress block -->
           <div class="progress-red">
             <div class="progress-header">Progress</div>
             <div class="progress-grid" id="progress-grid"></div>
           </div>
 
-          <!-- Plan block -->
           <div class="plan-shape"></div>
           <div class="plan-header">Plan</div>
+          <div class="plan-grid" id="plan-grid"></div>
+
+          <div class="grid-cell cell-1"></div>
+          <div class="grid-cell cell-2"></div>
+          <div class="grid-cell cell-3"></div>
+          <div class="grid-cell cell-4"></div>
+          <div class="grid-cell cell-5"></div>
+          <div class="grid-cell cell-6"></div>
+          <div class="grid-cell cell-7"></div>
+          <div class="grid-cell cell-8"></div>
         </div>
 
-        <!-- 底部导航 -->
         <nav class="bottom-nav">
-          <button class="nav-item nav-home active">Home</button>
-          <button class="nav-item nav-run">Run Mode</button>
-          <button class="nav-item nav-gallery">Gallery</button>
+          <button class="nav-item nav-home active" aria-label="Home">
+            Home
+          </button>
+
+          <button class="nav-item nav-run">
+            Run Mode
+          </button>
+
+          <button class="nav-item nav-gallery">
+            Gallery
+          </button>
         </nav>
       </div>
     </div>
 
     <script>
-      // ========= 生成本周 7 天，今天高亮橙色圆点 =========
       const datesRow = document.getElementById("calendar-dates");
+      const weekdayRow = document.querySelector(".weekday-row");
+      const weekdaySpans = weekdayRow ? weekdayRow.querySelectorAll("span") : [];
 
       const today = new Date();
-      const todayDay = today.getDate();
+      const todayDate = today.getDate();
       const todayMonth = today.getMonth();
       const todayYear = today.getFullYear();
 
-      // JS: 0=Sun,1=Mon,...  转成以 Mon 为 0
-      const jsDay = today.getDay();
-      const mondayIndex = (jsDay + 6) % 7; // 0=Mon, 6=Sun
+      const jsDay = today.getDay(); 
+      const mondayIndex = (jsDay + 6) % 7; 
 
-      const startOfWeek = new Date(
-        todayYear,
-        todayMonth,
-        todayDay - mondayIndex
-      );
+      const monday = new Date(todayYear, todayMonth, todayDate - mondayIndex);
 
       datesRow.innerHTML = "";
+
       for (let i = 0; i < 7; i++) {
         const d = new Date(
-          startOfWeek.getFullYear(),
-          startOfWeek.getMonth(),
-          startOfWeek.getDate() + i
+          monday.getFullYear(),
+          monday.getMonth(),
+          monday.getDate() + i
         );
 
         const span = document.createElement("span");
-        span.className = "calendar-date";
         span.textContent = d.getDate();
 
-        if (
-          d.getDate() === todayDay &&
+        const isToday =
+          d.getDate() === todayDate &&
           d.getMonth() === todayMonth &&
-          d.getFullYear() === todayYear
-        ) {
-          span.classList.add("is-today");
+          d.getFullYear() === todayYear;
+
+        if (isToday) {
+          span.classList.add("today");
+          if (weekdaySpans[i]) {
+            weekdaySpans[i].classList.add("today");
+          }
         }
 
         datesRow.appendChild(span);
       }
 
-      // ========= 点击跳转逻辑 =========
-
-      // 整个 calendar 区域点一下跳到 calendar 页面（如果你需要）
-      const calendarWeek = document.querySelector(".calendar-week");
-      if (calendarWeek) {
-        calendarWeek.addEventListener("click", () => {
+    
+      const calendarStrip = document.querySelector(".calendar-strip");
+      if (calendarStrip) {
+        calendarStrip.addEventListener("click", () => {
           window.location.href = "calendar.html";
         });
       }
 
-      // Progress 方块
       const progressCard = document.querySelector(".progress-red");
       if (progressCard) {
         progressCard.addEventListener("click", () => {
@@ -122,16 +137,21 @@
         });
       }
 
-      // Plan：形状和文字都可以点
+      const planShape = document.querySelector(".plan-shape");
+      const planHeader = document.querySelector(".plan-header");
+
       function goPlan() {
         window.location.href = "plan.html";
       }
-      const planShape = document.querySelector(".plan-shape");
-      const planHeader = document.querySelector(".plan-header");
-      if (planShape) planShape.addEventListener("click", goPlan);
-      if (planHeader) planHeader.addEventListener("click", goPlan);
 
-      // ========= 底部导航 =========
+      if (planShape) {
+        planShape.addEventListener("click", goPlan);
+      }
+      if (planHeader) {
+        planHeader.addEventListener("click", goPlan);
+      }
+
+
       const homeBtn = document.querySelector(".nav-home");
       if (homeBtn) {
         homeBtn.addEventListener("click", () => {

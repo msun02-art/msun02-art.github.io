@@ -374,7 +374,7 @@
             />
           </div>
 
-          <!-- save art 按钮 -->
+          <!-- save art 按钮（现在是保存到 Gallery，而不是下载） -->
           <button class="save-btn" id="saveBtn">
             save art
           </button>
@@ -393,7 +393,7 @@
             class="nav-item nav-run"
             onclick="window.location.href='runmode.html'"
           >
-            Run Mode
+            Run
           </button>
 
           <button
@@ -407,6 +407,7 @@
     </div>
 
     <script>
+      // 从 Run Mode 存进来的路线图
       const dataURL = localStorage.getItem("funrunRouteImage");
       const canvas = document.getElementById("pixelCanvas");
       const ctx = canvas.getContext("2d");
@@ -414,6 +415,9 @@
       const pixelSizeSlider = document.getElementById("pixelSize");
       const pixelSizeValue = document.getElementById("pixelSizeValue");
       const saveBtn = document.getElementById("saveBtn");
+
+      // 和 gallery.html 约定同一个 key
+      const STORAGE_KEY = "funrunGalleryItems";
 
       const img = new Image();
 
@@ -650,19 +654,36 @@
         }
       });
 
-      // save art：下载当前画布为 PNG
-      function saveArt() {
+      // save art：把当前 canvas 存到 localStorage，Gallery 读取
+      function saveArtToGallery() {
         if (!canvas.width || !canvas.height) return;
+
+        // 确认是最新状态
         if (img.complete && img.src) {
-          drawPixelArt(); // 确保是最新状态
+          drawPixelArt();
         }
-        const link = document.createElement("a");
-        link.download = "funrun_art.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
+
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const items = raw ? JSON.parse(raw) : [];
+
+          items.push({
+            id: Date.now(),
+            dataUrl: dataUrl,
+          });
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+          alert("Saved to Gallery!");
+        } catch (e) {
+          console.error("Save to gallery failed", e);
+          alert("Failed to save. Please try again.");
+        }
       }
 
-      saveBtn.addEventListener("click", saveArt);
+      saveBtn.addEventListener("click", saveArtToGallery);
     </script>
   </body>
 </html>

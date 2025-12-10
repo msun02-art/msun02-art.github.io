@@ -1,220 +1,207 @@
-.iphone-pro {
-  background-color: #f3ff75;
+/* ===== 基础重置 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Carlito", sans-serif;
+  background-color: #e0e0e0;
+}
+
+/* ===== 外层灰底：预览手机用 ===== */
+.wrapper-main {
   width: 100%;
-  min-width: 402px;
+  padding: 40px 0;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== 手机壳 ===== */
+.iphone-pro {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 402px;
   min-height: 874px;
   position: relative;
+  overflow: hidden;
 }
 
-
-.iphone-pro .character {
-  position: absolute;
-  /* 这是大圆原来的 top / left */
-  top: 333px;
-  left: 130px;
-  /* 大圆宽高 154 × 154 */
-  width: 154px;
-  height: 154px;
-
-  /* 绕人物中心（大圆中心）旋转 */
-  transform-origin: center center;
-  transform: rotate(180deg); /* 想调角度就改这里 */
+/* ===== 顶部栏（和其他页面统一） ===== */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 30px 16px;
 }
 
-/* head*/
-.iphone-pro .ellipse {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 154px;
-  height: 154px;
-  background-color: #57a267;
-  border-radius: 77px;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* right eye white*/
-.iphone-pro .div {
-  position: absolute;
-  top: 57px;   /* 390 - 333 */
-  left: 69px;  /* 199 - 130 */
-  width: 37px;
-  height: 39px;
-  background-color: #ffffff;
-  border-radius: 18.5px / 19.5px;
-  transform: rotate(89.5deg);
-}
-
-/* right eye black*/
-.iphone-pro .ellipse-2 {
-  position: absolute;
-  top: 61px;   /* 394 - 333 */
-  left: 72px;  /* 202 - 130 */
-  width: 21px;
-  height: 21px;
-  background-color: #000000;
-  border-radius: 10.49px / 10.51px;
-  transform: rotate(89.5deg);
-}
-
-/* right eye hightlight */
-.iphone-pro .ellipse-3 {
-  position: absolute;
-  top: 64px;   /* 397 - 333 */
-  left: 75px;  /* 205 - 130 */
-  width: 8px;
-  height: 9px;
-  background-color: #ffffff;
-  border-radius: 4.05px / 4.44px;
-  transform: rotate(89.5deg);
-}
-
-/* left eye white*/
-.iphone-pro .ellipse-4 {
-  position: absolute;
-  top: 57px;   
-  left: 25px;  
-  width: 37px;
-  height: 39px;
-  background-color: #ffffff;
-  border-radius: 18.5px / 19.5px;
-  transform: rotate(89.5deg);
-}
-
-/* left eye black*/
-.iphone-pro .ellipse-5 {
-  position: absolute;
-  top: 60px;  
-  left: 31px; 
-  width: 21px;
-  height: 21px;
-  background-color: #000000;
-  border-radius: 10.49px / 10.51px;
-  transform: rotate(89.5deg);
-}
-
-/* left eye hightlight */
-.iphone-pro .ellipse-6 {
-  position: absolute;
-  top: 64px;  
-  left: 33px;  
-  width: 8px;
-  height: 9px;
-  background-color: #ffffff;
-  border-radius: 4.05px / 4.44px;
-  transform: rotate(89.5deg);
-}
-
-/* 如果这个是眼睛里的一小块图像 */
-.iphone-pro .img {
-  position: absolute;
-  top: 64px;  
-  left: 33px; 
-  width: 9px;
-  height: 8px;
-}
-
-/* 左侧身体块 */
-.iphone-pro .ellipse-7 {
-  position: absolute;
-  top: 73px;    
-  left: -20px;  
-  width: 67px;
-  height: 62px;
-  background-color: #57a267;
-  border-radius: 33.5px / 31px;
-}
-
-/* 右侧身体块（带轻微旋转） */
-.iphone-pro .ellipse-8 {
-  position: absolute;
-  top: 77px; 
-  left: 120px; 
-  width: 48px;
-  height: 62px;
-  background-color: #57a267;
-  border-radius: 24px / 31px;
-  transform: rotate(21.75deg);
-}
-
-/* 左腿（或脚） */
-.iphone-pro .vector {
-  position: absolute;
-  top: 145px;   /* 478 - 333 */
-  left: -2px;   /* 128 - 130 */
-  width: 60px;
+.avatar-circle {
+  width: 54px;
   height: 54px;
+  border-radius: 50%;
+  background-color: #f4ff75;
 }
 
-/* 右腿（或脚） */
-.iphone-pro .vector-2 {
-  position: absolute;
-  top: 139px;   /* 472 - 333 */
-  left: 88px;   /* 218 - 130 */
-  width: 52px;
-  height: 60px;
+/* ★ 调小 Username 字号，和其他页面统一，不那么大 */
+.username {
+  font-family: "Carlito", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #57a368;
+  display: inline-block;
+  margin-top: 4px;
+  letter-spacing: 0.03em;
 }
 
-/* left blush */
-.iphone-pro .ellipse-9 {
-  position: absolute;
-  top: 87px;   
-  left: 8px;   
-  width: 27px;
-  height: 12px;
-  background-color: #ffd5fc;
-  border-radius: 13.5px / 6px;
-  z-index: 1;
+/* 顶部绿色横线 */
+.top-divider {
+  height: 4px;
+  width: 100%;
+  background-color: #57a368;
 }
 
-/* right blush */
-.iphone-pro .ellipse-10 {
-  position: absolute;
-  top: 90px;   
-  left: 95px; 
-  width: 26px;
-  height: 11px;
-  background-color: #ffd5fc;
-  border-radius: 13px / 5.5px;
+/* ===== Gallery 中间内容 ===== */
+.gallery-section {
+  padding: 16px 24px 120px; /* 预留底部导航高度 */
 }
 
-/* 头顶小装饰们（vector 图） */
-.iphone-pro .vector-3 {
-  position: absolute;
-  top: 40px;   /* 373 - 333 */
-  left: 22px;  /* 152 - 130 */
-  width: 10px;
-  height: 13px;
+/* 这两个样式虽然保留，但页面里不再用（你可以删掉 title / subtitle 的 DOM） */
+.gallery-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #57a368;
+  margin-bottom: 4px;
 }
 
-.iphone-pro .vector-4 {
-  position: absolute;
-  top: 35px;   /* 368 - 333 */
-  left: 88px;  /* 218 - 130 */
-  width: 10px;
-  height: 9px;
+.gallery-subtitle {
+  font-size: 14px;
+  color: #999999;
+  margin-bottom: 16px;
 }
 
-.iphone-pro .vector-5 {
-  position: absolute;
-  top: 104px;  /* 437 - 333 */
-  left: 44px;  /* 174 - 130 */
-  width: 18px;
-  height: 6px;
+.gallery-empty {
+  font-size: 14px;
+  color: #bbbbbb;
+  text-align: center;
+  margin-top: 40px;
 }
 
-.iphone-pro .vector-6 {
-  position: absolute;
-  top: 95px;   /* 428 - 333 */
-  left: 33px;  /* 163 - 130 */
-  width: 12px;
-  height: 13px;
+/* 图片网格：两列方块 */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
-/* 嘴巴 / 中间小块 */
-.iphone-pro .polygon {
+.gallery-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;        /* 正方形 */
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f4ff75;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* 右上角小标签：比如第几张 */
+.gallery-badge {
   position: absolute;
-  top: 82px;   /* 415 - 333 */
-  left: 50px;  /* 180 - 130 */
-  width: 22px;
-  height: 7px;
+  right: 6px;
+  top: 6px;
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #57a368;
+}
+
+/* 点击放大时的遮罩（简单 modal） */
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.lightbox-inner {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.lightbox-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  font-size: 24px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* ===== 底部导航（和 homepage 一样） ===== */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  background-color: #f4ff75;
+
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.nav-item {
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  font-family: "Carlito", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  color: #57a368;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item.active {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.nav-item:active {
+  opacity: 0.7;
 }

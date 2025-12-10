@@ -1,439 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>FUNRUN – Runmode (Random Route)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta charset="utf-8" />
+  <head>
+    <title>FUNRUN – Runmode (Random Route)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="runmode.css" />
+  </head>
 
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"
-  />
+  <body>
+    <div class="wrapper-main">
+      <div class="iphone-pro">
+        <header class="top-bar">
+          <div class="user-info">
+            <div class="avatar-circle"></div>
+            <span class="username">Username</span>
+          </div>
+        </header>
 
-  <style>
-    .wrapper-main {
-      width: 100%;
-      padding: 40px 0;
-      background-color: #e0e0e0;
-      display: flex;
-      justify-content: center;
-    }
+        <div class="top-divider"></div>
+        <div class="gpsroute-area">
+          <div id="gps-status" class="gps-status">
+            Tap START to generate a route.
+          </div>
 
-    .iphone-pro {
-      background-color: #ffffff;
-      width: 100%;
-      max-width: 402px;
-      min-height: 874px;
-      position: relative;
-      font-family: "Carlito", sans-serif;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 32px 30px 16px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar-circle {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background-color: #f4ff75;
-    }
-
-    .username {
-      font-size: 18px;
-      color: #57a368;
-      display: inline-block;
-      margin-top: 10px;
-    }
-
-    .top-divider {
-      height: 4px;
-      width: 100%;
-      background-color: #57a368;
-    }
-
-    .gpsroute-area {
-      position: absolute;
-      top: 140px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 80px);
-      height: 480px;
-
-      background-color: #b0daff;
-      padding: 30px;
-      box-sizing: border-box;
-      border-radius: 20px;
-
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .gps-status {
-      font-size: 12px;
-      color: #17426a;
-      text-align: left;
-      min-height: 32px;
-      white-space: pre-line;
-    }
-
-    .gps-canvas-wrapper {
-      flex: 1;
-      position: relative;
-      border-radius: 18px;
-      overflow: hidden;
-    }
-
-    #routeCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border-radius: 18px;
-      background-color: #88c4ff;
-    }
-
-    .run-buttons {
-      position: absolute;
-      bottom: 140px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70%;
-      max-width: 320px;
-      height: 60px;
-    }
-
-    .start-btn {
-      width: 100%;
-      height: 100%;
-      background-color: #57a368;
-      border: none;
-      border-radius: 30px;
-      color: #f4ff75;
-      font-size: 20px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .run-controls {
-      position: absolute;
-      inset: 0;
-      display: none;
-      gap: 16px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .control-btn {
-      flex: 1;
-      height: 100%;
-      border-radius: 30px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .pause-btn {
-      background-color: #57a368;
-      color: #f4ff75;
-    }
-
-    .end-btn {
-      background-color: #ff9a4a;
-      color: #ffffff;
-    }
-
-    .bottom-nav {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      height: 100px;
-      width: 100%;
-      background-color: #f4ff75;
-
-      display: flex;
-      align-items: center;
-      justify-content: stretch;
-      padding: 0;
-    }
-
-    .nav-item {
-      flex: 1;
-      height: 100%;
-      background: none;
-      border: none;
-      cursor: pointer;
-
-      font-size: 18px;
-      font-weight: 600;
-      color: #57a368;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav-item.active {
-      background-color: #ffffff;
-      color: #57a368;
-      box-shadow: 0 0 0 2px rgba(87, 163, 104, 0.2);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrapper-main">
-    <div class="iphone-pro">
-      <header class="top-bar">
-        <div class="user-info">
-          <div class="avatar-circle"></div>
-          <span class="username">Username</span>
+          <div class="gps-canvas-wrapper">
+            <canvas id="routeCanvas"></canvas>
+          </div>
         </div>
-      </header>
 
-      <div class="top-divider"></div>
+        <div class="run-buttons">
+          <button class="start-btn" id="start-btn">START</button>
 
-      <div class="gpsroute-area">
-        <div id="gps-status" class="gps-status">
-          Tap START to generate a route.
+          <div class="run-controls" id="run-controls">
+            <button class="control-btn pause-btn" id="pause-btn">Pause</button>
+            <button class="control-btn end-btn" id="end-btn">End</button>
+          </div>
         </div>
-        <div class="gps-canvas-wrapper">
-          <canvas id="routeCanvas"></canvas>
-        </div>
+
+      
+        <nav class="bottom-nav">
+          <button
+            class="nav-item nav-home"
+            onclick="window.location.href='homepage.html'"
+          >
+            Home
+          </button>
+          <button
+            class="nav-item nav-run"
+            onclick="window.location.href='runmode.html'"
+          >
+            Run
+          </button>
+          <button
+            class="nav-item nav-gallery"
+            onclick="window.location.href='gallery.html'"
+          >
+            Gallery
+          </button>
+        </nav>
       </div>
-
-      <div class="run-buttons">
-        <button class="start-btn" id="start-btn">START</button>
-
-        <div class="run-controls" id="run-controls">
-          <button class="control-btn pause-btn" id="pause-btn">Pause</button>
-          <button class="control-btn end-btn" id="end-btn">End</button>
-        </div>
-      </div>
-
-      <nav class="bottom-nav">
-        <button class="nav-item nav-home active">Home</button>
-        <button class="nav-item nav-run">Run Mode</button>
-        <button class="nav-item nav-gallery">Gallery</button>
-      </nav>
     </div>
-  </div>
 
-  <script>
-    const canvas   = document.getElementById("routeCanvas");
-    const ctx      = canvas.getContext("2d");
-    const statusEl = document.getElementById("gps-status");
+    <script>
+      const canvas = document.getElementById("routeCanvas");
+      const ctx = canvas.getContext("2d");
+      const statusEl = document.getElementById("gps-status");
 
-    // 只保留画布上的路径点
-    let pathPoints = [];     // {x, y}
-    let running    = false;
-    let stopped    = false;
+      let pathPoints = [];
+      let running = false;
+      let stopped = false;
 
+      let x = 0;
+      let y = 0;
+      let angle = 0;
+      const STEP = 1;
+      let stepsCount = 0;
+      const MAX_STEPS = 800;
+      let animationId = null;
 
-    let x = 0;
-    let y = 0;
-    let angle = 0;
-    const STEP = 1;         
-    let stepsCount = 0;
-    const MAX_STEPS = 800;   
-    let animationId = null;
-
-    function setStatus(text) {
-      statusEl.textContent = text;
-    }
-
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width  = rect.width;
-      canvas.height = rect.height;
-      redrawPath();
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-
-    function redrawPath() {
-
-      ctx.fillStyle = "#88c4ff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      if (pathPoints.length === 0) return;
-
-
-      ctx.lineWidth = 4;
-      ctx.lineJoin  = "round";
-      ctx.lineCap   = "round";
-      ctx.strokeStyle = "#283593";
-      ctx.shadowColor = "rgba(40,53,147,0.3)";
-      ctx.shadowBlur  = 2;
-
-      ctx.beginPath();
-      pathPoints.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-
-
-      const start = pathPoints[0];
-      ctx.fillStyle = "#F4FF75";
-      ctx.beginPath();
-      ctx.arc(start.x, start.y, 7, 0, Math.PI * 2);
-      ctx.fill();
-
-
-      const last = pathPoints[pathPoints.length - 1];
-      ctx.fillStyle = "#ff7043";
-      ctx.beginPath();
-      ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function stepRoute() {
-      if (!running || stopped) {
-        animationId = null;
-        return;
+      function setStatus(text) {
+        statusEl.textContent = text;
       }
 
-      const margin = 20;
-
-
-      angle += (Math.random() - 0.5) * 0.5;
-
-      let newX = x + Math.cos(angle) * STEP;
-      let newY = y + Math.sin(angle) * STEP;
-
-
-      if (
-        newX < margin ||
-        newX > canvas.width - margin ||
-        newY < margin ||
-        newY > canvas.height - margin
-      ) {
-        angle += Math.PI / 2;
-        newX = x + Math.cos(angle) * STEP;
-        newY = y + Math.sin(angle) * STEP;
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        redrawPath();
       }
 
-      x = newX;
-      y = newY;
-      pathPoints.push({ x, y });
-      stepsCount++;
+      window.addEventListener("resize", resizeCanvas);
 
-      setStatus("Drawing route… steps: " + stepsCount);
+      function redrawPath() {
+        ctx.fillStyle = "#88c4ff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      redrawPath();
+        if (pathPoints.length === 0) return;
 
-      if (stepsCount >= MAX_STEPS) {
-        setStatus("Route complete.\nTap End to continue or Pause to stop viewing.");
-        running = false;
-        animationId = null;
-        return;
+        ctx.lineWidth = 4;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#283593";
+        ctx.shadowColor = "rgba(40,53,147,0.3)";
+        ctx.shadowBlur = 2;
+
+        ctx.beginPath();
+        pathPoints.forEach((p, i) => {
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+
+        const start = pathPoints[0];
+        ctx.fillStyle = "#F4FF75";
+        ctx.beginPath();
+        ctx.arc(start.x, start.y, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        const last = pathPoints[pathPoints.length - 1];
+        ctx.fillStyle = "#ff7043";
+        ctx.beginPath();
+        ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
+        ctx.fill();
       }
 
-      animationId = requestAnimationFrame(stepRoute);
-    }
+      function stepRoute() {
+        if (!running || stopped) {
+          animationId = null;
+          return;
+        }
 
-    function onStartClick() {
-      stopped    = false;
-      running    = true;
-      pathPoints = [];
-      stepsCount = 0;
+        const margin = 20;
 
-      const rect = canvas.getBoundingClientRect();
-      canvas.width  = rect.width;
-      canvas.height = rect.height;
+        angle += (Math.random() - 0.5) * 0.5;
 
-      x = canvas.width / 2;
-      y = canvas.height / 2;
-      angle = Math.random() * Math.PI * 2;
+        let newX = x + Math.cos(angle) * STEP;
+        let newY = y + Math.sin(angle) * STEP;
 
-      pathPoints.push({ x, y });
-      redrawPath();
+        if (
+          newX < margin ||
+          newX > canvas.width - margin ||
+          newY < margin ||
+          newY > canvas.height - margin
+        ) {
+          angle += Math.PI / 2;
+          newX = x + Math.cos(angle) * STEP;
+          newY = y + Math.sin(angle) * STEP;
+        }
 
-      setStatus("Drawing your route…");
+        x = newX;
+        y = newY;
+        pathPoints.push({ x, y });
+        stepsCount++;
 
-      if (!animationId) {
+        setStatus("Drawing route… steps: " + stepsCount);
+
+        redrawPath();
+
+        if (stepsCount >= MAX_STEPS) {
+          setStatus(
+            "Route complete.\nTap End to continue or Pause to stop viewing."
+          );
+          running = false;
+          animationId = null;
+          return;
+        }
+
         animationId = requestAnimationFrame(stepRoute);
       }
-    }
 
-    function onPauseClick(btn) {
-      if (!running) {
+      function onStartClick() {
+        stopped = false;
         running = true;
-        setStatus("Resumed. Drawing continues…");
-        btn.textContent = "Pause";
+        pathPoints = [];
+        stepsCount = 0;
+
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        x = canvas.width / 2;
+        y = canvas.height / 2;
+        angle = Math.random() * Math.PI * 2;
+
+        pathPoints.push({ x, y });
+        redrawPath();
+
+        setStatus("Drawing your route…");
+
         if (!animationId) {
           animationId = requestAnimationFrame(stepRoute);
         }
-      } else {
+      }
+
+      function onPauseClick(btn) {
+        if (!running) {
+          running = true;
+          setStatus("Resumed. Drawing continues…");
+          btn.textContent = "Pause";
+          if (!animationId) {
+            animationId = requestAnimationFrame(stepRoute);
+          }
+        } else {
+          running = false;
+          setStatus("Paused.");
+          btn.textContent = "Resume";
+        }
+      }
+
+      function onEndClick() {
+        const ok = confirm("Finish this run?");
+        if (!ok) return;
+
         running = false;
-        setStatus("Paused.");
-        btn.textContent = "Resume";
-      }
-    }
+        stopped = true;
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+        }
 
-    function onEndClick() {
-      const ok = confirm("Finish this run?");
-      if (!ok) return;
+        setStatus("Stopped. Steps: " + stepsCount);
 
-      running = false;
-      stopped = true;
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-      }
+        try {
+          const dataURL = canvas.toDataURL("image/png");
+          localStorage.setItem("funrunRouteImage", dataURL);
+        } catch (e) {
+          console.log("Failed to save route image:", e);
+        }
 
-      setStatus("Stopped. Steps: " + stepsCount);
-
-      try {
-        const dataURL = canvas.toDataURL("image/png");
-        localStorage.setItem("funrunRouteImage", dataURL);
-        console.log("Route image saved to localStorage");
-      } catch (e) {
-        console.log("Failed to save route image:", e);
+        window.location.href = "pixel.html";
       }
 
-      // 去下一页生成 pixel art
-      window.location.href = "pixel.html";
-    }
+      window.addEventListener("load", () => {
+        resizeCanvas();
 
-    window.addEventListener("load", () => {
-      resizeCanvas();
+        const startBtn = document.getElementById("start-btn");
+        const controls = document.getElementById("run-controls");
+        const pauseBtn = document.getElementById("pause-btn");
+        const endBtn = document.getElementById("end-btn");
 
-      const startBtn = document.getElementById("start-btn");
-      const controls = document.getElementById("run-controls");
-      const pauseBtn = document.getElementById("pause-btn");
-      const endBtn   = document.getElementById("end-btn");
+        controls.style.display = "none";
+        startBtn.style.display = "block";
 
-      controls.style.display = "none";
-      startBtn.style.display = "block";
+        startBtn.addEventListener("click", () => {
+          onStartClick();
+          startBtn.style.display = "none";
+          controls.style.display = "flex";
+        });
 
-      startBtn.addEventListener("click", () => {
-        onStartClick();
-        startBtn.style.display = "none";
-        controls.style.display = "flex";
+        pauseBtn.addEventListener("click", () => {
+          onPauseClick(pauseBtn);
+        });
+
+        endBtn.addEventListener("click", () => {
+          onEndClick();
+        });
       });
-
-      pauseBtn.addEventListener("click", () => {
-        onPauseClick(pauseBtn);
-      });
-
-      endBtn.addEventListener("click", () => {
-        onEndClick();
-      });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
