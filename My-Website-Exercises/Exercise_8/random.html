@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Random Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        background-color: #FFF461;
+        transition: background-color 0.6s ease;
+      }
+
+      .square, .color {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        width: 160px;
+        height: 100px;
+        border: 2px solid #888;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        background-color: #ADAD28;
+        color: #4F4F08;
+        transition: background 0.3s ease;
+      }
+      .square:hover, .color:hover {
+        background-color: #CFCF4F;
+      }
+
+      #emoji {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin-top: 30px;
+        font-size: 64px;
+        opacity: 0;
+        transition: all 0.5s ease;
+        pointer-events: none;
+      }
+
+      #emoji.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(-8px);
+      }
+
+      /* The small color box */
+      #colorBox {
+        position: absolute;
+        top: 20%;
+        left: 75%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        border: 2px solid rgba(0,0,0,0.3);
+        background-color: red;
+        opacity: 0;
+        transition: all 0.5s ease;
+        pointer-events: none;
+      }
+      #colorBox.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+       #text {
+        position: fixed;
+        top: 50%;
+        left: 22%;
+        transform: translate(-50%, -50%);
+        color: #4F4F08;
+        font-size: 30px;
+        font-family: system-ui, sans-serif;
+        text-align: center;
+        pointer-events: none;
+        z-index: 5;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="text">Come and generate your own Creature!</div>
+    <button class="square" style="top:30%; left:50%;">Head Generator</button>
+    <button class="square" style="top:50%; left:50%;">Body Generator</button>
+    <button class="square" style="top:70%; left:50%;">Foot Generator</button>
+    <button class="color" style="top:50%; left:75%;">Color Generator</button>
+
+    <div id="emoji">🐸</div>
+    <div id="colorBox"></div>
+
+    <script>
+      console.log("JS loaded ✅");
+
+      // 🐾 Random emoji generator
+      const buttons = document.querySelectorAll('.square');
+      const emoji = document.getElementById('emoji');
+      const animals = ['🐴','🐸','🐘','🦉','🦊','🐍','🦋','🐱','🐶','🦄'];
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const randomEmoji = animals[Math.floor(Math.random() * animals.length)];
+          emoji.textContent = randomEmoji;
+          emoji.classList.remove('show');
+          void emoji.offsetWidth;
+          emoji.classList.add('show');
+        });
+      });
+
+      // 🎨 Only colorBox changes
+      const colorBtn = document.querySelector('.color');
+      const colorBox = document.getElementById('colorBox');
+      const selectedColors = ['red','blue','pink','yellow','orange','green','brown','purple'];
+
+      colorBtn.addEventListener('click', () => {
+        const randomColor = selectedColors[Math.floor(Math.random() * selectedColors.length)];
+        colorBox.style.backgroundColor = randomColor;
+
+        colorBox.classList.remove('show');
+        void colorBox.offsetWidth;
+        colorBox.classList.add('show');
+      });
+    </script>
+  </body>
+</html>
