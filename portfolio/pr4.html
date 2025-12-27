@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>4pic4 — Mandy Sun</title>
+
+  <style>
+    :root{
+      --max:1100px;
+      --text:#111;
+      --muted:#6b6b6b;
+      --line:#e7e7e7;
+      --trim:6px;
+    }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    .top{ padding:18px 20px; border-bottom:1px solid var(--line); }
+    .wrap{ max-width:var(--max); margin:0 auto; padding:0 20px; }
+
+    .back{
+      display:inline-block;
+      padding:8px 0;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .back:hover{ color:var(--text); }
+
+    .main{ padding:16px 0 80px; }
+
+    /* =========================
+       主图：全宽（一定看得出大）
+       ========================= */
+ .hero{
+  margin:36px 0 0;
+  display:flex;
+  justify-content:center; /* ✅ 居中 */
+}
+
+.hero img{
+  width:80vw;             /* ✅ 80% 视口宽 */
+  max-width:980px;        /* 可选：给桌面端一个上限，不想要就删掉 */
+  height:auto;
+  display:block;
+}
+
+    .title{
+      text-align:center;
+      margin:56px 0 0;
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .meta{ margin-top:20px; text-align:center; }
+    .meta div{
+      margin:10px 0;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.02em;
+    }
+
+    .desc{
+      margin:24px auto 0;
+      max-width:780px;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    /* =========================
+       附图
+       ========================= */
+    .section{
+      margin-top:52px;
+      padding-top:26px;
+      border-top:1px solid var(--line);
+    }
+    .section-title{
+      text-align:center;
+      margin:0 0 22px;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    .more-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:22px;
+      justify-items:center;
+    }
+    .more-grid img{
+      width:min(92vw, 760px);
+      height:auto;
+      display:block;
+    }
+
+    .trim{
+      clip-path: inset(var(--trim));
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="back" href="portfolio.html#works">← Back to Works</a>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ✅ 主图 = 4pic4-1 -->
+    <div class="hero">
+      <img src="4pic4-1.jpg" alt="Printmaking 4">
+    </div>
+
+    <div class="wrap">
+      <h1 class="title">Owlman</h1>
+
+      <div class="meta">
+        <div>— x — mm</div>
+        <div>Intaglio print</div>
+      </div>
+
+      <div class="desc">
+        <p></p>
+      </div>
+
+      <!-- ✅ 附图 -->
+      <section class="section">
+        <p class="section-title">More images</p>
+        <div class="more-grid">
+          <img class="trim" src="4pic4-2.jpg" alt="4pic4 — detail">
+        </div>
+      </section>
+    </div>
+
+  </main>
+</body>
+</html>

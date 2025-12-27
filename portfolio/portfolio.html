@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mandy Sun — Portfolio</title>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#111;
+      --muted:#6b6b6b;
+      --line:#e7e7e7;
+      --accent:#f3c316;
+      --max:1100px;
+      --radius:16px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    .top{
+      padding:40px 20px 18px;
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+    }
+
+    .brand{
+      text-align:center;
+      font-weight:900;
+      letter-spacing:0.5px;
+      font-size:40px;
+      line-height:1.05;
+      text-transform:uppercase;
+    }
+    .brand .decor{
+      display:inline-block;
+      margin:0 10px;
+      font-weight:900;
+      opacity:.85;
+    }
+
+    .nav{
+      margin-top:18px;
+      display:flex;
+      justify-content:center;
+      gap:26px;
+      flex-wrap:wrap;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-size:13px;
+    }
+    .nav a{
+      padding:8px 10px;
+      border-radius:999px;
+    }
+    .nav a:hover{ background:#f6f6f6; }
+
+    .section{ padding:26px 20px 40px; }
+
+    .works-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+      padding-bottom:14px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .works-title{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      margin:0;
+    }
+
+    .filters{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:900;
+    }
+
+    .filter-btn{
+      border:0;
+      background:transparent;
+      padding:8px 2px;
+      cursor:pointer;
+      color:var(--muted);
+      position:relative;
+    }
+    .filter-btn:hover{ color:var(--text); }
+    .filter-btn.active{ color:var(--text); }
+    .filter-btn.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:-6px;
+      height:3px;
+      background:var(--accent);
+      border-radius:999px;
+    }
+
+    .grid{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:18px;
+      position:relative;
+      z-index:1;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 720px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+      .brand{ font-size:34px; }
+    }
+    @media (max-width: 420px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      display:block;
+      position:relative;
+      z-index:5;
+      pointer-events:auto;
+    }
+    .card *{ pointer-events:auto; }
+
+    .thumb{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      border-radius:var(--radius);
+      overflow:hidden;
+      background:#f3f3f3;
+      border:1px solid #ededed;
+      position:relative;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+      transition: transform .25s ease;
+    }
+    .card:hover .thumb img{ transform: scale(1.04); }
+
+    .meta{ padding-top:10px; }
+    .name{
+      margin:0;
+      font-weight:900;
+      letter-spacing:.02em;
+      font-size:14px;
+    }
+    .sub{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.25;
+    }
+
+    .hidden{ display:none !important; }
+
+    /* About / Contact text style */
+    .textblock{
+      max-width:760px;
+      line-height:1.7;
+      font-size:14px;
+    }
+    .muted{ color:var(--muted); }
+
+    .contact-list{
+      max-width:760px;
+      margin-top:10px;
+      font-size:14px;
+      line-height:1.9;
+    }
+    .contact-list a{
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <span class="decor">=</span>Mandy Sun<span class="decor">=</span>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#works">Works</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section" id="works">
+    <div class="wrap">
+      <div class="works-head">
+        <h2 class="works-title">Works</h2>
+
+        <div class="filters" role="tablist" aria-label="Work categories">
+          <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All works</button>
+          <button class="filter-btn" data-filter="painting" role="tab" aria-selected="false">Painting</button>
+          <button class="filter-btn" data-filter="drawings" role="tab" aria-selected="false">Drawings</button>
+          <button class="filter-btn" data-filter="book" role="tab" aria-selected="false">Book</button>
+          <button class="filter-btn" data-filter="webbased" role="tab" aria-selected="false">Web-Based</button>
+          <button class="filter-btn" data-filter="video" role="tab" aria-selected="false">Video</button>
+          <button class="filter-btn" data-filter="printmaking" role="tab" aria-selected="false">Printmaking</button>
+          <button class="filter-btn" data-filter="installation" role="tab" aria-selected="false">Installation</button>
+        </div>
+      </div>
+
+      <section class="grid" id="grid">
+        <!-- Painting (6) -->
+        <a class="card" href="p1.html" data-cat="painting">
+          <div class="thumb"><img src="pic1.jpg" alt="Painting 1"></div>
+          <div class="meta"><p class="name">Hiding</p><p class="sub">Painting</p></div>
+        </a>
+
+        <a class="card" href="p2.html" data-cat="painting">
+          <div class="thumb"><img src="pic2.jpg" alt="Painting 2"></div>
+          <div class="meta"><p class="name">Reverses Market</p><p class="sub">Painting</p></div>
+        </a>
+
+        <a class="card" href="p3.html" data-cat="painting">
+          <div class="thumb"><img src="pic3.jpg" alt="Painting 3"></div>
+          <div class="meta"><p class="name">Reverses Reality</p><p class="sub">Painting</p></div>
+        </a>
+
+        <a class="card" href="p4.html" data-cat="painting">
+          <div class="thumb"><img src="pic4.jpg" alt="Painting 4"></div>
+          <div class="meta"><p class="name">Hiding II</p><p class="sub">Painting</p></div>
+        </a>
+
+        <a class="card" href="p5.html" data-cat="painting">
+          <div class="thumb"><img src="pic5.jpg" alt="Painting 5"></div>
+          <div class="meta"><p class="name">Untitled</p><p class="sub">Painting</p></div>
+        </a>
+
+        <a class="card" href="p6.html" data-cat="painting">
+          <div class="thumb"><img src="pic6.jpg" alt="Painting 6"></div>
+          <div class="meta"><p class="name">Untitled</p><p class="sub">Painting</p></div>
+        </a>
+
+        <!-- Drawings (12) -->
+        <a class="card" href="d1.html" data-cat="drawings"><div class="thumb"><img src="2pic1.jpg" alt="Drawing 1"></div><div class="meta"><p class="name">EYE 你</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d2.html" data-cat="drawings"><div class="thumb"><img src="2pic2.jpg" alt="Drawing 2"></div><div class="meta"><p class="name">Around Life</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d3.html" data-cat="drawings"><div class="thumb"><img src="2pic3.jpg" alt="Drawing 3"></div><div class="meta"><p class="name">Untitled</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d4.html" data-cat="drawings"><div class="thumb"><img src="2pic4.jpg" alt="Drawing 4"></div><div class="meta"><p class="name">Why Create</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d5.html" data-cat="drawings"><div class="thumb"><img src="2pic5.jpg" alt="Drawing 5"></div><div class="meta"><p class="name">Why War</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d6.html" data-cat="drawings"><div class="thumb"><img src="2pic6.jpg" alt="Drawing 6"></div><div class="meta"><p class="name">Why See</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d7.html" data-cat="drawings"><div class="thumb"><img src="2pic7.jpg" alt="Drawing 7"></div><div class="meta"><p class="name">Why Sad</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d8.html" data-cat="drawings"><div class="thumb"><img src="2pic8.jpg" alt="Drawing 8"></div><div class="meta"><p class="name">Why Eat</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d9.html" data-cat="drawings"><div class="thumb"><img src="2pic9.jpg" alt="Drawing 9"></div><div class="meta"><p class="name">Untitled Patterns</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d10.html" data-cat="drawings"><div class="thumb"><img src="2pic10.jpg" alt="Drawing 10"></div><div class="meta"><p class="name">Untitled</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d11.html" data-cat="drawings"><div class="thumb"><img src="2pic11.jpg" alt="Drawing 11"></div><div class="meta"><p class="name">Untitled</p><p class="sub">Drawings</p></div></a>
+        <a class="card" href="d12.html" data-cat="drawings"><div class="thumb"><img src="2pic12.jpg" alt="Drawing 12"></div><div class="meta"><p class="name">200 Plants</p><p class="sub">Drawings</p></div></a>
+
+        <!-- Book (4) -->
+        <a class="card" href="b1.html" data-cat="book"><div class="thumb"><img src="3pic1.jpg" alt="Book 1"></div><div class="meta"><p class="name">漫漫奇獸録</p><p class="sub">Book</p></div></a>
+        <a class="card" href="b2.html" data-cat="book"><div class="thumb"><img src="3pic2.jpg" alt="Book 2"></div><div class="meta"><p class="name">Code of Life</p><p class="sub">Book</p></div></a>
+        <a class="card" href="b3.html" data-cat="book"><div class="thumb"><img src="3pic3.jpg" alt="Book 3"></div><div class="meta"><p class="name">Human Occupation Spaces</p><p class="sub">Book</p></div></a>
+        <a class="card" href="b4.html" data-cat="book"><div class="thumb"><img src="3pic4.jpg" alt="Book 4"></div><div class="meta"><p class="name">Cogniverse</p><p class="sub">Book</p></div></a>
+
+        <!-- Web-Based (2 shown here) -->
+        <a class="card" href="w1.html" data-cat="webbased">
+          <div class="thumb"><img src="web1.jpg" alt="Web-Based 1"></div>
+          <div class="meta"><p class="name">FUNRUN APP</p><p class="sub">Web-Based</p></div>
+        </a>
+
+        <a class="card" href="../Seminar-website/page1.html" data-cat="webbased">
+          <div class="thumb"><img src="web2.jpg" alt="Web-Based 2"></div>
+          <div class="meta"><p class="name">(Web project 2)</p><p class="sub">Web-Based</p></div>
+        </a>
+
+        <!-- Video (3) -->
+        <a class="card" href="v1.html" data-cat="video"><div class="thumb"><img src="video1.jpg" alt="Video 1"></div><div class="meta"><p class="name">Neighbors</p><p class="sub">Video</p></div></a>
+        <a class="card" href="v2.html" data-cat="video"><div class="thumb"><img src="video2.jpg" alt="Video 2"></div><div class="meta"><p class="name">Ridiculous</p><p class="sub">Video</p></div></a>
+        <a class="card" href="v3.html" data-cat="video"><div class="thumb"><img src="video3.jpg" alt="Video 3"></div><div class="meta"><p class="name">Hot</p><p class="sub">Video</p></div></a>
+
+        <!-- Printmaking (4) -->
+        <a class="card" href="pr1.html" data-cat="printmaking"><div class="thumb"><img src="4pic1.jpg" alt="Printmaking 1"></div><div class="meta"><p class="name">Running Fish</p><p class="sub">Printmaking</p></div></a>
+        <a class="card" href="pr2.html" data-cat="printmaking"><div class="thumb"><img src="4pic2.jpg" alt="Printmaking 2"></div><div class="meta"><p class="name">Self-portrait</p><p class="sub">Printmaking</p></div></a>
+        <a class="card" href="pr3.html" data-cat="printmaking"><div class="thumb"><img src="4pic3.jpg" alt="Printmaking 3"></div><div class="meta"><p class="name">Humanities-贪嗔痴慢疑</p><p class="sub">Printmaking</p></div></a>
+        <a class="card" href="pr4.html" data-cat="printmaking"><div class="thumb"><img src="4pic4-1.jpg" alt="Printmaking 4"></div><div class="meta"><p class="name">Owlman</p><p class="sub">Printmaking</p></div></a>
+
+        <!-- Installation (7 shown) -->
+        <a class="card" href="i1.html" data-cat="installation"><div class="thumb"><img src="5pic1.jpg" alt="Installation 1"></div><div class="meta"><p class="name">Consuming</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i2.html" data-cat="installation"><div class="thumb"><img src="5pic2.jpg" alt="Installation 2"></div><div class="meta"><p class="name">Owl Skeleton</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i3.html" data-cat="installation"><div class="thumb"><img src="5pic3.jpg" alt="Installation 3"></div><div class="meta"><p class="name">Memory Lamp</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i4.html" data-cat="installation"><div class="thumb"><img src="5pic4.jpg" alt="Installation 4"></div><div class="meta"><p class="name">(title)</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i6.html" data-cat="installation"><div class="thumb"><img src="5pic6.jpg" alt="Installation 6"></div><div class="meta"><p class="name">Me Turning into a Fish</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i7.html" data-cat="installation"><div class="thumb"><img src="5pic7.jpg" alt="Installation 7"></div><div class="meta"><p class="name">The Unseen Ones</p><p class="sub">Installation</p></div></a>
+        <a class="card" href="i8.html" data-cat="installation"><div class="thumb"><img src="5pic8.jpg" alt="Installation 8"></div><div class="meta"><p class="name">Haunted</p><p class="sub">Installation</p></div></a>
+      </section>
+    </div>
+  </main>
+
+  <!-- ABOUT -->
+ <section class="section" id="about">
+  <div class="wrap">
+    <h2>About</h2>
+    <div class="textblock">
+      <p>Mandy Sun</p>
+      <p>BFA, Rhode Island School of Design (RISD), Class of 2028</p>
+      <p>Major: Art and Computation</p>
+      <p>
+        Work spans drawing/painting and computational approaches, with an emphasis on storytelling,
+        character-based worldbuilding, and interactive systems.
+      </p>
+      <p class="muted">
+        Current interests include generative thinking, digital materiality, and the emotional texture of interfaces—how images,
+        systems, and narratives shape perception and memory.
+      </p>
+    </div>
+  </div>
+</section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="wrap">
+      <h2>Contact</h2>
+      <div class="contact-list">
+        <div>Email: <a href="mailto:mandy.art@icloud.com">mandy.art@icloud.com</a></div>
+        <div>Email: <a href="mailto:sunmanci@me.com">sunmanci@me.com</a></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const buttons = document.querySelectorAll(".filter-btn");
+    const cards = document.querySelectorAll(".card");
+
+    function setActive(btn){
+      buttons.forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+    }
+
+    function showAll(){
+      cards.forEach(card => card.classList.remove("hidden"));
+    }
+
+    function filter(cat){
+      if(cat === "all"){
+        showAll();
+        return;
+      }
+      cards.forEach(card => {
+        const c = card.dataset.cat;
+        card.classList.toggle("hidden", c !== cat);
+      });
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const cat = btn.dataset.filter;
+        setActive(btn);
+        filter(cat);
+      });
+    });
+
+    showAll();
+  </script>
+</body>
+</html>

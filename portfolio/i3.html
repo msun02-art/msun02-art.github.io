@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Memory Lamp — Mandy Sun</title>
+
+  <style>
+    :root{
+      --max:980px;
+      --text:#111;
+      --muted:#6b6b6b;
+      --line:#e7e7e7;
+    }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    .top{ padding:18px 20px; border-bottom:1px solid var(--line); }
+    .wrap{ max-width:var(--max); margin:0 auto; }
+
+    .back{
+      display:inline-block;
+      padding:8px 0;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .back:hover{ color:var(--text); }
+
+    .main{ padding:14px 20px 70px; }
+
+    /* Main work image */
+    .figure{ display:flex; justify-content:center; margin-top:34px; }
+    img.main-img{ width:min(92vw, 760px); height:auto; display:block; border-radius:0; }
+
+    .title{
+      text-align:center;
+      margin:46px 0 0;
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+    .meta{ margin-top:18px; text-align:center; }
+    .meta div{
+      margin:10px 0;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.02em;
+    }
+    .desc{
+      margin:22px auto 0;
+      max-width:760px;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    /* Gallery */
+    .section{
+      margin-top:46px;
+      padding-top:22px;
+      border-top:1px solid var(--line);
+    }
+    .section-title{
+      text-align:center;
+      margin:0 0 18px;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    .thumb-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+    }
+    @media (max-width: 720px){
+      .thumb-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .thumb-btn{
+      border:1px solid #ededed;
+      background:#f3f3f3;
+      border-radius:0;     /* ✅ no rounded corners */
+      padding:0;
+      overflow:hidden;
+      cursor:pointer;
+      display:block;
+    }
+    .thumb-btn img{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      object-fit:cover;
+      display:block;
+      transition:transform .2s ease;
+    }
+    .thumb-btn:hover img{ transform:scale(1.03); }
+
+    /* Lightbox */
+    .lightbox{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.72);
+      padding:24px;
+      z-index:9999;
+    }
+    .lightbox.open{ display:flex; }
+
+    .lightbox-inner{
+      max-width:min(96vw, 1100px);
+      max-height:86vh;
+    }
+    .lightbox-inner img{
+      width:100%;
+      height:auto;
+      max-height:86vh;
+      object-fit:contain;
+      display:block;
+      border-radius:0;  /* ✅ no rounded corners */
+      background:#111;
+    }
+
+    .lb-hint{
+      position:fixed;
+      left:0; right:0;
+      bottom:18px;
+      text-align:center;
+      color:rgba(255,255,255,.75);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      pointer-events:none;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="back" href="portfolio.html#works">← Back to Works</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="wrap">
+
+      <div class="figure">
+        <img class="main-img" src="5pic3.jpg" alt="Memory Lamp (Installation)">
+      </div>
+
+      <h1 class="title">Memory Lamp</h1>
+
+      <div class="meta">
+        <div></div>
+        <div>Wood, wood sticks, photos on translucent paper, mylar films, yarn</div>
+      </div>
+
+      <div class="desc">
+        <p></p>
+      </div>
+
+      <!-- ✅ 10-image grid -->
+      <section class="section" aria-label="More images">
+        <p class="section-title">More images</p>
+
+        <div class="thumb-grid">
+          <button class="thumb-btn" type="button" data-full="i3-1.jpg"><img src="i3-1.jpg" alt="i3 image 1"></button>
+          <button class="thumb-btn" type="button" data-full="i3-2.jpg"><img src="i3-2.jpg" alt="i3 image 2"></button>
+          <button class="thumb-btn" type="button" data-full="i3-3.jpg"><img src="i3-3.jpg" alt="i3 image 3"></button>
+          <button class="thumb-btn" type="button" data-full="i3-4.jpg"><img src="i3-4.jpg" alt="i3 image 4"></button>
+          <button class="thumb-btn" type="button" data-full="i3-5.jpg"><img src="i3-5.jpg" alt="i3 image 5"></button>
+          <button class="thumb-btn" type="button" data-full="i3-6.jpg"><img src="i3-6.jpg" alt="i3 image 6"></button>
+          <button class="thumb-btn" type="button" data-full="i3-7.jpg"><img src="i3-7.jpg" alt="i3 image 7"></button>
+          <button class="thumb-btn" type="button" data-full="i3-8.jpg"><img src="i3-8.jpg" alt="i3 image 8"></button>
+         
+          <button class="thumb-btn" type="button" data-full="i3-10.jpg"><img src="i3-10.jpg" alt="i3 image 10"></button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-inner">
+      <img id="lightboxImg" src="" alt="Expanded view">
+    </div>
+    <div class="lb-hint">Click anywhere / press ESC to close</div>
+  </div>
+
+  <script>
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const thumbs = document.querySelectorAll(".thumb-btn");
+
+    function openLightbox(src){
+      lightboxImg.src = src;
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxImg.src = "";
+      document.body.style.overflow = "";
+    }
+
+    thumbs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        openLightbox(btn.getAttribute("data-full"));
+      });
+    });
+
+    lightbox.addEventListener("click", closeLightbox);
+
+    window.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeLightbox();
+    });
+  </script>
+</body>
+</html>
