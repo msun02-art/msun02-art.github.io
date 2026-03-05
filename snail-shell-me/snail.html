@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Snail</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+
+html, body{
+margin:0;
+height:100%;
+overflow:hidden;
+cursor:none;
+
+background-image:url("background.jpg");
+background-size:cover;
+background-position:center;
+}
+
+#cursor{
+position:fixed;
+width:120px;
+pointer-events:none;
+z-index:9999;
+}
+
+#titleScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:200;
+transition:opacity 2s;
+}
+
+#titleText{
+font-family:'Press Start 2P', monospace;
+font-size:40px;
+line-height:1.8;
+letter-spacing:8px;
+color:black;
+text-align:center;
+}
+
+#snail{
+position:absolute;
+width:120px;
+z-index:100;
+}
+
+#videoScreen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:500;
+}
+
+video{
+width:80%;
+}
+
+</style>
+</head>
+
+<body>
+
+<img id="cursor" src="eye.png">
+
+<div id="titleScreen">
+<div id="titleText">
+TO KNOW ME<br>
+CATCH ME
+</div>
+</div>
+
+<img id="snail" src="shell.png">
+
+<div id="videoScreen">
+<video id="videoPlayer" controls autoplay muted loop>
+<source src="snail.MOV">
+</video>
+</div>
+
+<audio id="bgAudio" loop>
+<source src="623860__bigvegie__sandsshiftweird.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+/* 鼠标 */
+
+const cursor = document.getElementById("cursor")
+
+document.addEventListener("mousemove", e => {
+
+cursor.style.left = e.clientX - 60 + "px"
+cursor.style.top = e.clientY - 60 + "px"
+
+})
+
+
+/* 音频 */
+
+const bgAudio = document.getElementById("bgAudio")
+
+document.addEventListener("click", () => {
+
+bgAudio.volume = 0.6
+bgAudio.play()
+
+}, { once: true })
+
+
+/* TITLE */
+
+setTimeout(()=>{
+
+let title=document.getElementById("titleScreen")
+
+title.style.opacity=0
+
+setTimeout(()=>{
+title.style.display="none"
+},2000)
+
+},4000)
+
+
+/* 蜗牛 */
+
+const snail=document.getElementById("snail")
+
+let x=window.innerWidth/2
+let y=window.innerHeight/2
+
+snail.style.left=x+"px"
+snail.style.top=y+"px"
+
+let escaping=false
+
+function randomMove(){
+
+if(escaping) return
+
+x+=(Math.random()-0.5)*5
+y+=(Math.random()-0.5)*5
+
+snail.style.left=x+"px"
+snail.style.top=y+"px"
+
+}
+
+setInterval(randomMove,1000)
+
+
+document.addEventListener("mousemove",(e)=>{
+
+if(escaping) return
+
+let rect=snail.getBoundingClientRect()
+
+let dx=e.clientX-(rect.left+rect.width/2)
+let dy=e.clientY-(rect.top+rect.height/2)
+
+let distance=Math.sqrt(dx*dx+dy*dy)
+
+if(distance<70){
+
+escaping=true
+
+x-=dx/distance*50
+y-=dy/distance*50
+
+snail.style.left=x+"px"
+snail.style.top=y+"px"
+
+setTimeout(()=>{
+escaping=false
+},300)
+
+}
+
+})
+
+
+/* 点击蜗牛 */
+
+snail.addEventListener("click",()=>{
+
+document.getElementById("videoScreen").style.display="flex"
+
+document.getElementById("cursor").style.display="none"
+
+let video = document.getElementById("videoPlayer")
+
+video.currentTime = 0
+video.play()
+
+})
+
+
+/* ESC */
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="Escape"){
+
+document.getElementById("videoScreen").style.display="none"
+
+document.getElementById("cursor").style.display="block"
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
