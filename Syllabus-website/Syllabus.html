@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn as We Go</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #fff4bf;
+      color: #2f2a1f;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .dot-background {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .dot {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      opacity: 0.75;
+      animation: floatDots linear infinite;
+    }
+
+    .dot:nth-child(1) { background: #ff6b6b; left: 8%; top: 20%; animation-duration: 12s; }
+    .dot:nth-child(2) { background: #4ecdc4; left: 18%; top: 70%; animation-duration: 15s; width: 7px; height: 7px; }
+    .dot:nth-child(3) { background: #5b8def; left: 32%; top: 30%; animation-duration: 18s; }
+    .dot:nth-child(4) { background: #ffb703; left: 45%; top: 82%; animation-duration: 13s; width: 11px; height: 11px; }
+    .dot:nth-child(5) { background: #9b5de5; left: 61%; top: 22%; animation-duration: 16s; }
+    .dot:nth-child(6) { background: #06d6a0; left: 75%; top: 66%; animation-duration: 14s; width: 8px; height: 8px; }
+    .dot:nth-child(7) { background: #f15bb5; left: 88%; top: 40%; animation-duration: 17s; }
+    .dot:nth-child(8) { background: #00bbf9; left: 53%; top: 52%; animation-duration: 20s; width: 7px; height: 7px; }
+    .dot:nth-child(9) { background: #fb5607; left: 24%; top: 12%; animation-duration: 19s; width: 6px; height: 6px; }
+    .dot:nth-child(10) { background: #80ed99; left: 93%; top: 78%; animation-duration: 21s; width: 10px; height: 10px; }
+    .dot:nth-child(11) { background: #ef476f; left: 12%; top: 48%; animation-duration: 22s; width: 6px; height: 6px; }
+    .dot:nth-child(12) { background: #118ab2; left: 39%; top: 64%; animation-duration: 16s; width: 8px; height: 8px; }
+    .dot:nth-child(13) { background: #ffd166; left: 68%; top: 12%; animation-duration: 24s; width: 7px; height: 7px; }
+    .dot:nth-child(14) { background: #8338ec; left: 82%; top: 18%; animation-duration: 18s; width: 6px; height: 6px; }
+    .dot:nth-child(15) { background: #3a86ff; left: 4%; top: 84%; animation-duration: 20s; width: 8px; height: 8px; }
+    .dot:nth-child(16) { background: #ff006e; left: 58%; top: 88%; animation-duration: 23s; width: 7px; height: 7px; }
+    .dot:nth-child(17) { background: #2a9d8f; left: 71%; top: 43%; animation-duration: 15s; width: 6px; height: 6px; }
+    .dot:nth-child(18) { background: #e76f51; left: 29%; top: 91%; animation-duration: 26s; width: 8px; height: 8px; }
+    .dot:nth-child(19) { background: #7209b7; left: 96%; top: 28%; animation-duration: 19s; width: 6px; height: 6px; }
+    .dot:nth-child(20) { background: #70d6ff; left: 50%; top: 8%; animation-duration: 17s; width: 7px; height: 7px; }
+    .dot:nth-child(21) { background: #ff9770; left: 16%; top: 34%; animation-duration: 25s; width: 5px; height: 5px; }
+    .dot:nth-child(22) { background: #06d6a0; left: 36%; top: 17%; animation-duration: 14s; width: 6px; height: 6px; }
+    .dot:nth-child(23) { background: #5b8def; left: 64%; top: 73%; animation-duration: 20s; width: 6px; height: 6px; }
+    .dot:nth-child(24) { background: #f15bb5; left: 86%; top: 91%; animation-duration: 22s; width: 5px; height: 5px; }
+
+    @keyframes floatDots {
+      0% { transform: translateY(0) translateX(0) scale(1); }
+      35% { transform: translateY(-54px) translateX(28px) scale(1.15); }
+      70% { transform: translateY(34px) translateX(-36px) scale(0.9); }
+      100% { transform: translateY(0) translateX(0) scale(1); }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 22px 7vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 244, 191, 0.75);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(47, 42, 31, 0.12);
+    }
+
+    nav a {
+      color: #2f2a1f;
+      text-decoration: none;
+      font-size: 16px;
+      margin-left: 24px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-left: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo-img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      display: block;
+    }
+
+    header {
+      min-height: 100vh;
+      width: min(1180px, calc(100% - 14vw));
+      margin: 0 auto;
+      padding: 150px 0 80px;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 10px 18px;
+      border: 1px solid rgba(47, 42, 31, 0.2);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.35);
+      font-size: 16px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: 0.96;
+      letter-spacing: -0.055em;
+      max-width: 980px;
+    }
+
+    .hero-text {
+      max-width: 680px;
+      margin-top: 34px;
+      font-size: 22px;
+    }
+
+    .buttons {
+      margin-top: 42px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: 1px solid #2f2a1f;
+      color: #2f2a1f;
+      text-decoration: none;
+      background: transparent;
+      transition: 0.25s ease;
+    }
+
+    .button.primary {
+      background: #2f2a1f;
+      color: #fff4bf;
+    }
+
+    .button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(47, 42, 31, 0.15);
+    }
+
+    .hero-image {
+      width: 145%;
+      max-width: none;
+      max-height: 880px;
+      margin-left: -25%;
+      border-radius: 0;
+      object-fit: contain;
+      display: block;
+      border: none;
+      box-shadow: none;
+    }
+
+    section {
+      width: min(1180px, calc(100% - 14vw));
+      margin: 0 auto;
+      padding: 90px 0;
+    }
+
+    .section-title {
+      font-size: clamp(38px, 5.4vw, 66px);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      margin-bottom: 38px;
+      max-width: 980px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 20px;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+
+    .text-large {
+      font-size: 22px;
+      max-width: 960px;
+    }
+
+    .paragraph-section p {
+      font-size: 22px;
+      max-width: 980px;
+      margin-bottom: 24px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.32);
+      border: 1px solid rgba(47, 42, 31, 0.14);
+      border-radius: 28px;
+      padding: 28px;
+      min-height: 220px;
+      box-shadow: 0 12px 30px rgba(47, 42, 31, 0.06);
+    }
+
+    .card h3 {
+      font-size: 28px;
+      margin-bottom: 14px;
+      line-height: 1.1;
+    }
+
+    .card p {
+      font-size: 18px;
+    }
+
+    .number {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #2f2a1f;
+      color: #fff4bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .tuition {
+      width: min(1180px, calc(100% - 14vw));
+      margin: 90px auto;
+      padding: 60px 0;
+      color: #2f2a1f;
+    }
+
+    .tuition h2 {
+      font-size: clamp(42px, 6vw, 76px);
+      line-height: 1;
+      letter-spacing: -0.045em;
+      margin-bottom: 30px;
+    }
+
+    footer {
+      padding: 42px 0;
+      border-top: 1px solid rgba(47, 42, 31, 0.12);
+      text-align: center;
+      font-size: 16px;
+      opacity: 0.7;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hero-grid, .card-grid { grid-template-columns: 1fr; }
+      header { padding-top: 130px; }
+      .hero-image {
+        width: 115%;
+        max-height: 620px;
+        margin-left: -7%;
+      }
+      .tuition { padding: 36px 0; }
+      .eyebrow { font-size: 18px; }
+      .paragraph-section p, .text-large { font-size: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dot-background">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  </div>
+
+  <div class="page">
+    <nav>
+      <a href="#home" class="logo"><img class="nav-logo-img" src="logo.png" alt="Learn as We Go logo" />Learn as We Go</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#mission">Mission</a>
+        <a href="#structure">Structure</a>
+        <a href="#team">Team</a>
+      </div>
+    </nav>
+
+    <header id="home">
+      <div class="hero-grid reveal">
+        <div>
+          <p class="tag">A traveling, theme-based learning program</p>
+          <h1>The classroom is no longer just a classroom.</h1>
+          <p class="hero-text">
+            Learn as We Go offers dynamic courses where learning begins through travel, observation, interaction, movement, and artistic practice.
+          </p>
+          </div>
+
+        <img class="hero-image" src="logo.png" alt="Learn as We Go logo" />
+          <p>A village, a forest, a riverside, a boat, a field.</p>
+        </div>
+      </div>
+    </header>
+
+    <section id="about" class="reveal paragraph-section">
+      <p class="eyebrow">About</p>
+      <h2 class="section-title">A program shaped by movement, place, and experience.</h2>
+      <p>
+        Learn as We Go is a funded educational organization that offers dynamic, theme-based courses for people of different age groups. Unlike a conventional classroom, the program does not have a fixed location or a permanent theme.
+      </p>
+      <p>
+        The core concept is to create an active and joyful learning environment where everyone is invited to participate. By changing locations each time, the classroom expands into everyday life — a place where learning, sensing, and experiencing can happen anywhere.
+      </p>
+    </section>
+
+    <section id="mission" class="reveal paragraph-section">
+      <p class="eyebrow">Mission</p>
+      <h2 class="section-title">Aesthetic sensibility as internalized vitality.</h2>
+      <p>
+        This course treats aesthetic sensibility as the ability to internalize vitality through perception, passion, and curiosity. It encourages participants to learn from experience, draw energy from travel, observation, and study, and transform what they notice and feel into artistic expression.
+      </p>
+      <p>
+        Learning takes place in a classroom that is no longer just a classroom. It may become a game field, a riverside, a village, a forest, or any place where people feel comfortable imagining, learning, and responding.
+      </p>
+      <p>
+        The course values openness over fixed interpretation. Sometimes, when something creates thought, emotion, or reflection in an individual, that response itself may already be meaningful.
+      </p>
+    </section>
+
+    <section id="theme" class="reveal paragraph-section">
+      <p class="eyebrow">Course Theme</p>
+      <h2 class="section-title">Nature, artistic practice, and human culture.</h2>
+      <p>
+        The program explores the relationships between nature, artistic practice, and human culture, with particular attention to marginalized voices, minority ethnic communities, and traditional folk crafts. Participants are encouraged to observe the natural world, engage with unfamiliar cultures, and communicate with environments and communities beyond their everyday experience.
+      </p>
+    </section>
+
+    <section id="location" class="reveal paragraph-section">
+      <p class="eyebrow">Location</p>
+      <h2 class="section-title">Each place becomes part of the lesson.</h2>
+      <p>
+        Location shifts with each course theme. The program may take participants into villages of minority ethnic communities, rainforests, riversides, caves, grasslands, coastal landscapes, or even onto the ocean by sailboat.
+      </p>
+      <p>
+        Each journey allows every experience to become a meaningful lesson.
+      </p>
+    </section>
+
+    <section id="structure" class="reveal">
+      <p class="eyebrow">Course Structure</p>
+      <h2 class="section-title">Gather, prepare, travel, reflect.</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="number">1</div>
+          <h3>Opening Gathering</h3>
+          <p>Participants, volunteers, and team members gather in a central city for an opening ceremony. This gathering marks the beginning of the journey and creates a shared sense of community.</p>
+        </div>
+        <div class="card">
+          <div class="number">2</div>
+          <h3>Base Studio / Preparation</h3>
+          <p>Before traveling, the group stays at a temporary base, such as a studio, campus space, or gathering site. Participants are introduced to the theme, context, travel plan, safety guidelines, and community expectations.</p>
+        </div>
+        <div class="card">
+          <div class="number">3</div>
+          <h3>Travel-Based Learning</h3>
+          <p>The group travels to the location connected to the course theme. The classroom may become a cave, tent, local community space, riverside, forest, village, or another site that responds to the topic.</p>
+        </div>
+        <div class="card">
+          <div class="number">4</div>
+          <h3>Closing / Final Reflection</h3>
+          <p>Participants organize materials, develop final works, and share outcomes through artworks, field journals, presentations, documentation, small exhibitions, or other creative responses.</p>
+        </div>
+      </div>
+      <p class="text-large" style="margin-top: 34px;">
+        The program is designed to remain flexible. Since each course has a different theme, location, duration, and group of participants, the detailed itinerary and structure may vary accordingly.
+      </p>
+    </section>
+
+    <section id="team" class="reveal">
+      <p class="eyebrow">Instructors</p>
+      <h2 class="section-title">A team shaped by care, collaboration, and expertise.</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Founder</h3>
+          <p>Mandy Sun</p>
+        </div>
+        <div class="card">
+          <h3>Core Team</h3>
+          <p>A dedicated and hard-working team organizes the course structure, coordinates travel, and develops each course experience.</p>
+        </div>
+        <div class="card">
+          <h3>Volunteers</h3>
+          <p>Volunteers support daily activities, care for the community, and help create a warm and welcoming environment for everyone.</p>
+        </div>
+        <div class="card">
+          <h3>Guest Instructors</h3>
+          <p>Each course invites professionals whose expertise relates to the theme, including artists, researchers, professors, historians, craftspeople, biologists, and other specialists.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="schedule" class="reveal paragraph-section">
+      <p class="eyebrow">Schedule</p>
+      <h2 class="section-title">Courses usually last two to three weeks.</h2>
+      <p>
+        The program takes place at different times throughout the year, with most courses offered during school breaks, especially winter and summer vacations. Each course usually lasts around two to three weeks, depending on the theme, location, and travel plan.
+      </p>
+    </section>
+
+    <section id="requirements" class="reveal paragraph-section">
+      <p class="eyebrow">Requirements</p>
+      <h2 class="section-title">Requirements vary by course.</h2>
+      <p>
+        The program is open to different age groups. Each course will specify its intended participants. For children, adult accompaniment may be required.
+      </p>
+      <p>
+        Participants may need to prepare or cover the cost of certain tools and materials required for the course.
+      </p>
+      <p>
+        Depending on the location, participants may stay on campus, in local accommodations, tents, guesthouses, or other living arrangements.
+      </p>
+      <p>
+        Meal arrangements vary by course and location. Participants are responsible for covering their own living expenses and accommodation fees unless otherwise stated.
+      </p>
+    </section>
+
+    <section id="tuition" class="tuition reveal paragraph-section">
+      <p class="eyebrow">Tuition</p>
+      <h2>No tuition fee.</h2>
+      <p>
+        Learn as We Go is a funded program. There is no tuition fee for participation. However, participants are responsible for covering personal living expenses, accommodation fees, meals, transportation, tools, and materials unless otherwise stated.
+      </p>
+    </section>
+
+    <footer>
+      Learn as We Go · A classroom that moves through the world.
+    </footer>
+  </div>
+
+  <script>
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealElements.forEach((element) => observer.observe(element));
+  </script>
+</body>
+</html>
